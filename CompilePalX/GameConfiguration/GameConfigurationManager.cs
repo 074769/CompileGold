@@ -25,6 +25,11 @@ namespace CompilePalX
             text = text.Replace("$map$", FormatValue(Path.GetFileNameWithoutExtension(mapFile), quote));
             text = text.Replace("$bsp$", FormatValue(Path.ChangeExtension(mapFile, "bsp"), quote));
 
+            // The .map CompileGold's SDHLT tools (HLCSG/HLBSP/HLVIS/HLRAD) compile from.
+            // HLFIX writes this next to the source .rmf; every step after HLFIX in the
+            // compile chain reads from here instead of the originally selected file.
+            text = text.Replace("$goldMapFile$", FormatValue(Path.ChangeExtension(mapFile, "map"), quote));
+
             text = text.Replace("$mapCopyLocation$", FormatValue(Path.Combine(GameConfiguration.MapFolder, Path.ChangeExtension(Path.GetFileName(mapFile), "bsp")), quote));
 
             text = text.Replace("$game$", FormatValue(GameConfiguration.GameFolder, quote));
@@ -135,31 +140,14 @@ namespace CompilePalX
             if (!Directory.Exists(GameConfigurationFolder))
                 Directory.CreateDirectory(GameConfigurationFolder);
 
-            //Loading the last used configurations for hammer
-            RegistryKey? rk = Registry.CurrentUser.OpenSubKey(@"Software\Valve\Hammer\General");
-
             var configs = new List<GameConfiguration>();
 
-            //try loading json
+            // CompileGold does not auto-detect games (no Hammer/GameConfig.txt scanning).
+            // Game configurations are always added manually.
             if (File.Exists(GameConfigurationsPath))
             {
                 string jsonLoadText = File.ReadAllText(GameConfigurationsPath);
                 configs.AddRange(JsonConvert.DeserializeObject<List<GameConfiguration>>(jsonLoadText) ?? []);
-            }
-
-            //try loading from registry
-            if (rk != null)
-            {
-                string binFolder = (string)rk.GetValue("Directory")!;
-
-                try
-                {
-                    configs.AddRange(GameConfigurationParser.Parse(binFolder));
-                }
-                catch (Exception e)
-                {
-                    ExceptionHandler.LogException(e);
-                }
             }
 
             // remove duplicates

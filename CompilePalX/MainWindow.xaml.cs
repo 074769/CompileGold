@@ -194,7 +194,7 @@ namespace CompilePalX
 
                         if (File.Exists(argPath))
                         {
-                            if (argPath.EndsWith(".vmf") || argPath.EndsWith(".vmm") || argPath.EndsWith(".vmx") || argPath.EndsWith(".map"))
+                            if (argPath.EndsWith(".vmf") || argPath.EndsWith(".vmm") || argPath.EndsWith(".vmx") || argPath.EndsWith(".map") || argPath.EndsWith(".rmf"))
                                 CompilingManager.MapFiles.Add(new Map(argPath));
                         }
                     }
@@ -509,21 +509,9 @@ namespace CompilePalX
 	            }
 	            else
 	            {
-					ParameterAdder c = new ParameterAdder(selectedProcess.ParameterList);
+					// checking/unchecking rows in this window adds/removes parameters live
+					ParameterAdder c = new ParameterAdder(selectedProcess.ParameterList, selectedProcess.PresetDictionary[ConfigurationManager.CurrentPreset]);
 					c.ShowDialog();
-
-					if (c.ChosenItem != null)
-					{
-						if (c.ChosenItem.CanBeUsedMoreThanOnce)
-						{
-							// .clone() removes problems with parameters sometimes becoming linked
-							selectedProcess.PresetDictionary[ConfigurationManager.CurrentPreset].Add((ConfigItem)c.ChosenItem.Clone());
-						} 
-						else if (!selectedProcess.PresetDictionary[ConfigurationManager.CurrentPreset].Contains(c.ChosenItem))
-						{
-							selectedProcess.PresetDictionary[ConfigurationManager.CurrentPreset].Add(c.ChosenItem);
-						}
-					}
 	            }
 
                 AnalyticsManager.ModifyPreset();
@@ -885,7 +873,7 @@ namespace CompilePalX
                 dialog.InitialDirectory = GameConfigurationManager.GameConfiguration.SDKMapFolder;
 
             dialog.Multiselect = true;
-            dialog.Filter = "Map Files (*.vmf;*.vmm;*.bsp;*.map)|*.vmf;*.vmm;*.bsp;*.map|All Files (*.*)|*.*";
+            dialog.Filter = "Map Files (*.rmf;*.map;*.bsp)|*.rmf;*.map;*.bsp|All Files (*.*)|*.*";
 
             try
             {

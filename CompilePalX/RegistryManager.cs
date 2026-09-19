@@ -10,7 +10,8 @@ using Microsoft.Win32;
 namespace CompilePalX
 {
     /// <summary>
-    /// Handles reading and writing values for CompilePal's registry
+    /// Handles reading and writing values for CompileGold's registry.
+    /// Uses its own "CompileGold" key, isolated from any regular CompilePal install.
     /// </summary>
     public static class RegistryManager
     {
@@ -19,7 +20,7 @@ namespace CompilePalX
             try
             {
                 RegistryKey software = Registry.CurrentUser.OpenSubKey("Software", true);
-                RegistryKey compilePalRegistryKey = software.CreateSubKey("CompilePal");
+                RegistryKey compilePalRegistryKey = software.CreateSubKey("CompileGold");
 
                 compilePalRegistryKey.SetValue(key, value);
                 return true;
@@ -38,7 +39,7 @@ namespace CompilePalX
             try
             {
                 RegistryKey software = Registry.CurrentUser.OpenSubKey("Software", true);
-                RegistryKey compilePalRegistryKey = software.CreateSubKey("CompilePal");
+                RegistryKey compilePalRegistryKey = software.CreateSubKey("CompileGold");
 
                 return (T) compilePalRegistryKey.GetValue(key);
             }

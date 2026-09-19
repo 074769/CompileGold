@@ -29,7 +29,8 @@
     "Description": "Prints BSP statistics before writing the output.",
     "Value": null,
     "CanHaveValue": false,
-    "Warning": ""
+    "Warning": "",
+    "IsDebug": true
   },
   {
     "Name": "Texdata",

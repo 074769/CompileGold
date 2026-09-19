@@ -1,5 +1,8 @@
 name: 'Build (manual/push)'
 
+# Builds on every push to any branch, and can also be triggered manually
+# from the Actions tab. Produces a downloadable artifact — no GitHub
+# release needed, unlike build_release.yml.
 on:
   push:
   workflow_dispatch:

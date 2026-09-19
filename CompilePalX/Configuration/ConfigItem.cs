@@ -31,6 +31,11 @@ namespace CompilePalX
         public HashSet<int>? IncompatibleGames { get; set; }
         public HashSet<int>? CompatibleGames { get; set; }
 
+        // Marks this option as a debugging/diagnostic flag (leak checks, chart dumps, etc.)
+        // rather than a normal compile option, so it can be hidden by the debug filter
+        // dropdown in the parameter picker.
+        public bool IsDebug { get; set; }
+
         public bool IsCompatible
         {
             get
@@ -56,7 +61,7 @@ namespace CompilePalX
 
         public object Clone()
         {
-            return new ConfigItem() {Name=Name,Parameter=Parameter,Description = Description,Value=Value, Value2 = Value2, CanHaveValue = CanHaveValue,Warning = Warning,CanBeUsedMoreThanOnce = CanBeUsedMoreThanOnce, ReadOutput = ReadOutput, ValueIsFile = ValueIsFile, Value2IsFile = Value2IsFile, ValueIsFolder = ValueIsFolder, Value2IsFolder = Value2IsFolder, WaitForExit = WaitForExit, CompatibleGames = CompatibleGames, IncompatibleGames = IncompatibleGames};
+            return new ConfigItem() {Name=Name,Parameter=Parameter,Description = Description,Value=Value, Value2 = Value2, CanHaveValue = CanHaveValue,Warning = Warning,CanBeUsedMoreThanOnce = CanBeUsedMoreThanOnce, ReadOutput = ReadOutput, ValueIsFile = ValueIsFile, Value2IsFile = Value2IsFile, ValueIsFolder = ValueIsFolder, Value2IsFolder = Value2IsFolder, WaitForExit = WaitForExit, CompatibleGames = CompatibleGames, IncompatibleGames = IncompatibleGames, IsDebug = IsDebug};
         }
     }
 }

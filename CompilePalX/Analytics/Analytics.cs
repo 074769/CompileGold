@@ -17,7 +17,9 @@ namespace CompilePalX
 
         private const bool debuggerCheckOverride = false;
 
-        public static bool Enabled = true;
+        // Disabled for CompileGold: the analytics keys below belong to the upstream
+        // CompilePal project's account. CompileGold should not send telemetry there.
+        public static bool Enabled = false;
 
         private static Client? client;
         private static Client? legacyClient; // don't know who has access to this client. Keep sending it analytics in case it's still being used
@@ -36,7 +38,7 @@ namespace CompilePalX
                     },
                     ["app"] = new Dict()
                     {
-                        ["name"] = "CompilePal",
+                        ["name"] = "CompileGold",
                         ["version"] = UpdateManager.CurrentVersion
                     }
                 } 

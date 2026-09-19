@@ -3,17 +3,17 @@
                     xmlns:options="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     mc:Ignorable="options">
-    <!--RGB (Red, Green, Blue) = 228, 31, 39-->
+    <!--RGB (Red, Green, Blue) = 212, 175, 55 (gold)-->
     <!--E41F27-->
-    <Color x:Key="MahApps.Colors.HighlightColor">#FFE41F27</Color>
+    <Color x:Key="MahApps.Colors.HighlightColor">#FFD4AF37</Color>
 
-    <Color x:Key="MahApps.Colors.Accent">#FFE41F27</Color>
+    <Color x:Key="MahApps.Colors.Accent">#FFD4AF37</Color>
     <!--60%-->
-    <Color x:Key="MahApps.Colors.Accent2">#FFE41F27</Color>
+    <Color x:Key="MahApps.Colors.Accent2">#FFD4AF37</Color>
     <!--40%-->
-    <Color x:Key="MahApps.Colors.Accent3">#66E41F27</Color>
+    <Color x:Key="MahApps.Colors.Accent3">#66D4AF37</Color>
     <!--20%-->
-    <Color x:Key="MahApps.Colors.Accent4">#33E41F27</Color>
+    <Color x:Key="MahApps.Colors.Accent4">#33D4AF37</Color>
 
     <Color x:Key="MahApps.Colors.ThemeForeground">#FF585855</Color>
     <Color x:Key="MahApps.Colors.ThemeBackground">White</Color>

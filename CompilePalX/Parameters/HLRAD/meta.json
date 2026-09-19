@@ -7,7 +7,7 @@
   "Description": "SDHLT RAD stage. Computes and applies lighting (GoldSrc equivalent of VRAD).",
   "Warning": "",
   "PresetDefault": false,
-  "BasisString": " $vmfFile$",
+  "BasisString": " $goldMapFile$",
   "CheckExitCode": false,
   "WorkingDirectory": "$binFolder$"
 }

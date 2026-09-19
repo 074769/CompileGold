@@ -11,8 +11,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Documents;
 using CompilePalX.Compilers;
-using CompilePalX.Compilers.BSPPack;
-using CompilePalX.Compilers.UtilityProcess;
 using CompilePalX.Compiling;
 using CompilePalX.Configuration;
 using Newtonsoft.Json;
@@ -111,11 +109,10 @@ namespace CompilePalX
         {
             CompileProcesses.Clear();
 
-            CompileProcesses.Add(new BSPPack());
-            CompileProcesses.Add(new CubemapProcess());
-            CompileProcesses.Add(new NavProcess());
+            // BSPPack (PACK/REPACK/BSPZIP), CubemapProcess, NavProcess and UtilityProcess
+            // (particle manifests, soundscapes, cubemaps, nav meshes) are all Source Engine
+            // concepts with no GoldSrc equivalent, so CompileGold doesn't instantiate them.
             CompileProcesses.Add(new ShutdownProcess());
-            CompileProcesses.Add(new UtilityProcess());
 			CompileProcesses.Add(new CustomProcess());
 
             //collect new metadatas
@@ -364,7 +361,7 @@ namespace CompilePalX
         {
             if (initializeDefaultProcesses)
             {
-                string[] defaultProcesses = new string[] { "VBSP", "VVIS", "VRAD", "COPY", "GAME" };
+                string[] defaultProcesses = new string[] { "HLFIX", "HLCSG", "HLBSP", "HLVIS", "HLRAD", "COPY", "GAME" };
                 preset.Processes = defaultProcesses.ToDictionary(key => key, key => new List<PresetProcessParameter>());
             }
 

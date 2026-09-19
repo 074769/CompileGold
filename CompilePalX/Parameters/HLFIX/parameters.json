@@ -1,0 +1,11 @@
+[
+  {
+    "Name": "Verbose",
+    "Parameter": " -v",
+    "Description": "Verbose output, if supported by your hlfix build.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Remove if your hlfix.exe does not recognise this flag.",
+    "IsDebug": true
+  }
+]

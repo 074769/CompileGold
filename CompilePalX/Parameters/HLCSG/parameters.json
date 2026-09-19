@@ -53,7 +53,8 @@
     "Description": "Warns about overlapping brushes above this percentage of overlap (0-100). Mapper debugging aid.",
     "Value": null,
     "CanHaveValue": true,
-    "Warning": "Slows down HLCSG considerably; leave unset for normal compiles."
+    "Warning": "Slows down HLCSG considerably; leave unset for normal compiles.",
+    "IsDebug": true
   },
   {
     "Name": "Texdata",
@@ -69,7 +70,8 @@
     "Description": "Prints BSP statistics before writing the output.",
     "Value": null,
     "CanHaveValue": false,
-    "Warning": ""
+    "Warning": "",
+    "IsDebug": true
   },
   {
     "Name": "Low Priority",

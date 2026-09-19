@@ -7,7 +7,7 @@
   "Description": "SDHLT CSG stage. Chops brushes into convex hulls and builds the initial BSP data (GoldSrc equivalent of VBSP).",
   "Warning": "",
   "PresetDefault": false,
-  "BasisString": " $vmfFile$",
+  "BasisString": " $goldMapFile$",
   "CheckExitCode": false,
   "WorkingDirectory": "$binFolder$"
 }

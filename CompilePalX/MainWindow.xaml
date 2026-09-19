@@ -11,7 +11,7 @@
             Name="CompileWindow"
 
 
-            Title="Compile Pal X"
+            Title="CompileGold"
             MinHeight="595" MinWidth="850"
             Height="595" Width="850"
             Closing="MetroWindow_Closing"

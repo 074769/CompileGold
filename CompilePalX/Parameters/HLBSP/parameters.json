@@ -5,7 +5,8 @@
     "Description": "Only runs enough of HLBSP to check for leaks, then stops. Useful for quickly testing map sealing.",
     "Value": null,
     "CanHaveValue": false,
-    "Warning": "Does not produce a usable BSP."
+    "Warning": "Does not produce a usable BSP.",
+    "IsDebug": true
   },
   {
     "Name": "No Fill",
@@ -13,7 +14,8 @@
     "Description": "Skips outside filling. Faster, but leaks will not be detected or masked.",
     "Value": null,
     "CanHaveValue": false,
-    "Warning": "Not for final compiles."
+    "Warning": "Not for final compiles.",
+    "IsDebug": true
   },
   {
     "Name": "No Clip",
@@ -37,7 +39,8 @@
     "Description": "Don't fix up t-junctions.",
     "Value": null,
     "CanHaveValue": false,
-    "Warning": "Debugging option, not for normal use."
+    "Warning": "Debugging option, not for normal use.",
+    "IsDebug": true
   },
   {
     "Name": "No Null Texture Strip",
@@ -45,7 +48,8 @@
     "Description": "Disables stripping of NULL-textured faces.",
     "Value": null,
     "CanHaveValue": false,
-    "Warning": ""
+    "Warning": "",
+    "IsDebug": true
   },
   {
     "Name": "Max Node Size",
@@ -69,7 +73,8 @@
     "Description": "Prints BSP statistics before writing the output.",
     "Value": null,
     "CanHaveValue": false,
-    "Warning": ""
+    "Warning": "",
+    "IsDebug": true
   },
   {
     "Name": "Low Priority",

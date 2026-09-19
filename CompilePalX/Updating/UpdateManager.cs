@@ -57,8 +57,9 @@ namespace CompilePalX
 
         public static void CheckVersion()
         {
-            Thread updaterThread = new Thread(ThreadedCheck);
-            updaterThread.Start();
+            // Disabled for CompileGold: the update feed/URLs above point at the
+            // upstream CompilePal repo's releases, which don't apply to this fork.
+            // No-op so the app never claims to be "outdated" relative to CompilePal.
         }
 
         static async void ThreadedCheck()

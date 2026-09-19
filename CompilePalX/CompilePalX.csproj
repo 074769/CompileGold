@@ -2,6 +2,8 @@
   <PropertyGroup>
     <TargetFramework>net10.0-windows7.0</TargetFramework>
     <OutputType>WinExe</OutputType>
+    <AssemblyName>CompileGold</AssemblyName>
+    <RootNamespace>CompilePalX</RootNamespace>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
     <UseWPF>True</UseWPF>
     <RuntimeIdentifier>win-x86</RuntimeIdentifier>

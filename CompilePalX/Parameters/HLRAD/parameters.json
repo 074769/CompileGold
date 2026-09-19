@@ -69,7 +69,8 @@
     "Description": "Debug mode: sets unlit direct-lighting pixels to a random fullbright color to help locate unlit lightmaps.",
     "Value": null,
     "CanHaveValue": false,
-    "Warning": "Debugging aid, not for final compiles."
+    "Warning": "Debugging aid, not for final compiles.",
+    "IsDebug": true
   },
   {
     "Name": "Sparse",
@@ -85,7 +86,8 @@
     "Description": "Prints BSP statistics before writing the output.",
     "Value": null,
     "CanHaveValue": false,
-    "Warning": ""
+    "Warning": "",
+    "IsDebug": true
   },
   {
     "Name": "Texdata",

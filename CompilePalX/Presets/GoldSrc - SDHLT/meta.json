@@ -3,6 +3,7 @@
   "Map": null,
   "MapRegex": null,
   "Processes": {
+    "HLFIX": [],
     "HLCSG": [],
     "HLBSP": [],
     "HLVIS": [],

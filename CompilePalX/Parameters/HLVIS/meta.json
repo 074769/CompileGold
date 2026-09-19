@@ -7,7 +7,7 @@
   "Description": "SDHLT VIS stage. Computes potentially visible sets for the map (GoldSrc equivalent of VVIS).",
   "Warning": "",
   "PresetDefault": false,
-  "BasisString": " $vmfFile$",
+  "BasisString": " $goldMapFile$",
   "CheckExitCode": false,
   "WorkingDirectory": "$binFolder$"
 }
