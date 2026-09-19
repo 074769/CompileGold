@@ -1,1 +1,0 @@
-See https://github.com/ruarai/CompilePal/blob/master/Guides/Plugins.md
