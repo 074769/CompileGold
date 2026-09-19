@@ -1,0 +1,13 @@
+{
+  "Name": "GoldSrc - SDHLT",
+  "Map": null,
+  "MapRegex": null,
+  "Processes": {
+    "HLCSG": [],
+    "HLBSP": [],
+    "HLVIS": [],
+    "HLRAD": [],
+    "COPY": [],
+    "GAME": []
+  }
+}

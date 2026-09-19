@@ -194,7 +194,7 @@ namespace CompilePalX
 
                         if (File.Exists(argPath))
                         {
-                            if (argPath.EndsWith(".vmf") || argPath.EndsWith(".vmm") || argPath.EndsWith(".vmx"))
+                            if (argPath.EndsWith(".vmf") || argPath.EndsWith(".vmm") || argPath.EndsWith(".vmx") || argPath.EndsWith(".map"))
                                 CompilingManager.MapFiles.Add(new Map(argPath));
                         }
                     }
@@ -885,7 +885,7 @@ namespace CompilePalX
                 dialog.InitialDirectory = GameConfigurationManager.GameConfiguration.SDKMapFolder;
 
             dialog.Multiselect = true;
-            dialog.Filter = "Map Files (*.vmf;*.vmm;*.bsp)|*.vmf;*.vmm;*.bsp|All Files (*.*)|*.*";
+            dialog.Filter = "Map Files (*.vmf;*.vmm;*.bsp;*.map)|*.vmf;*.vmm;*.bsp;*.map|All Files (*.*)|*.*";
 
             try
             {

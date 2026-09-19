@@ -1,0 +1,13 @@
+{
+  "Name": "HLBSP",
+  "Path": "$binFolder$\\sdHLBSP.exe",
+  "Order": 1.2,
+  "DoRun": true,
+  "ReadOutput": true,
+  "Description": "SDHLT BSP stage. Builds the BSP tree and checks for leaks.",
+  "Warning": "",
+  "PresetDefault": false,
+  "BasisString": " $vmfFile$",
+  "CheckExitCode": false,
+  "WorkingDirectory": "$binFolder$"
+}

@@ -1,0 +1,13 @@
+{
+  "Name": "HLVIS",
+  "Path": "$binFolder$\\sdHLVIS.exe",
+  "Order": 1.3,
+  "DoRun": true,
+  "ReadOutput": true,
+  "Description": "SDHLT VIS stage. Computes potentially visible sets for the map (GoldSrc equivalent of VVIS).",
+  "Warning": "",
+  "PresetDefault": false,
+  "BasisString": " $vmfFile$",
+  "CheckExitCode": false,
+  "WorkingDirectory": "$binFolder$"
+}

@@ -1,0 +1,66 @@
+[
+  {
+    "Name": "Fast",
+    "Parameter": " -fast",
+    "Description": "Fast vis. Good for quick playtests, but r_speeds and visibility quality will be poor.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Not for final compiles."
+  },
+  {
+    "Name": "Full",
+    "Parameter": " -full",
+    "Description": "Full, normal vis pass.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "No Fix Portal File",
+    "Parameter": " -nofixprt",
+    "Description": "SDHLT: disables the .prt portal-file optimisation used for direct import into the J.A.C.K. map editor.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "SDHLT-specific parameter, not present in vanilla ZHLT."
+  },
+  {
+    "Name": "Chart",
+    "Parameter": " -chart",
+    "Description": "Prints BSP statistics before writing the output.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "Texdata",
+    "Parameter": " -texdata",
+    "Description": "Increases the texture memory pool size, in KB.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Low Priority",
+    "Parameter": " -low",
+    "Description": "Runs HLVIS as a low-priority process.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "High Priority",
+    "Parameter": " -high",
+    "Description": "Runs HLVIS as a high-priority process.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Can freeze your computer while compiling."
+  },
+  {
+    "Name": "Threads",
+    "Parameter": " -threads",
+    "Description": "Manually overrides the number of CPU threads used.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  }
+]
