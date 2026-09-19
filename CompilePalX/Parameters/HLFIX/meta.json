@@ -1,0 +1,13 @@
+{
+  "Name": "HLFIX",
+  "Path": "$hlfixExe$",
+  "Order": 1.0,
+  "DoRun": true,
+  "ReadOutput": true,
+  "Description": "Runs hlfix on the selected .rmf and writes a .map in the same folder (via -o). Must run before HLCSG.",
+  "Warning": "",
+  "PresetDefault": false,
+  "BasisString": " $vmfFile$ -o $goldMapFile$",
+  "CheckExitCode": false,
+  "WorkingDirectory": "$binFolder$"
+}

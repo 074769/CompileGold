@@ -1,0 +1,156 @@
+[
+  {
+    "Name": "Extra",
+    "Parameter": " -extra",
+    "Description": "Enables supersampling for higher quality, smoother lighting edges.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Increases compile time."
+  },
+  {
+    "Name": "Bounce",
+    "Parameter": " -bounce",
+    "Description": "Maximum number of radiosity light bounces (default 8).",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Chop",
+    "Parameter": " -chop",
+    "Description": "Radiosity patch size for normal (non-texlight) faces. Lower values increase quality at the cost of speed/memory.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Texchop",
+    "Parameter": " -texchop",
+    "Description": "Radiosity patch size for texlight-emitting faces.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Smooth",
+    "Parameter": " -smooth",
+    "Description": "Smoothing threshold angle (degrees) for shared normals between adjacent faces.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Ambient",
+    "Parameter": " -ambient",
+    "Description": "Minimum ambient world light applied to every face, as R G B (0.0-1.0 each).",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "Pass as three space-separated values, e.g. 0.1 0.1 0.1"
+  },
+  {
+    "Name": "Blur",
+    "Parameter": " -blur",
+    "Description": "Blurs the lightmap to soften GoldSrc's blocky shadow edges (default 1.5). Use 1.0 for the classic look.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "No Opaque Entities",
+    "Parameter": " -nopaque",
+    "Description": "Don't treat entities with the zhlt_lightflags/opaque settings as opaque to lighting.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "Pre-25th Anniversary",
+    "Parameter": " -pre25",
+    "Description": "SDHLT: overrides the light-clipping threshold limiter to 188, for compiling against the legacy pre-25th Anniversary Update engine.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Extension flag - only present in some HLT builds (e.g. SDHLT)."
+  },
+  {
+    "Name": "Blur Clamp",
+    "Parameter": " -blurclamp",
+    "Description": "Clamps the -blur smoothing value to avoid excessive softening of lightmap edges.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "No Studio Shadow",
+    "Parameter": " -nostudioshadow",
+    "Description": "SDHLT: ignores the zhlt_studioshadow keyvalue on studiomodels, disabling their custom shadow casting.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Extension flag - only present in some HLT builds (e.g. SDHLT)."
+  },
+  {
+    "Name": "Max Light",
+    "Parameter": " -maxlight",
+    "Description": "Caps the maximum light level, preventing fully overbright surfaces.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Circus",
+    "Parameter": " -circus",
+    "Description": "Debug mode: sets unlit direct-lighting pixels to a random fullbright color to help locate unlit lightmaps.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Debugging aid, not for final compiles.",
+    "IsDebug": true
+  },
+  {
+    "Name": "Sparse",
+    "Parameter": " -sparse",
+    "Description": "Reduces memory use of the sparse light-patch matrix at some cost to speed.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "Chart",
+    "Parameter": " -chart",
+    "Description": "Prints BSP statistics before writing the output.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Texdata",
+    "Parameter": " -texdata",
+    "Description": "Increases the texture memory pool size, in KB.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Low Priority",
+    "Parameter": " -low",
+    "Description": "Runs HLRAD as a low-priority process.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "High Priority",
+    "Parameter": " -high",
+    "Description": "Runs HLRAD as a high-priority process.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Can freeze your computer while compiling."
+  },
+  {
+    "Name": "Threads",
+    "Parameter": " -threads",
+    "Description": "Manually overrides the number of CPU threads used.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  }
+]

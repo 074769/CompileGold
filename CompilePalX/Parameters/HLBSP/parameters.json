@@ -1,0 +1,127 @@
+[
+  {
+    "Name": "Leak Only",
+    "Parameter": " -leakonly",
+    "Description": "Only runs enough of HLBSP to check for leaks, then stops. Useful for quickly testing map sealing.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Does not produce a usable BSP.",
+    "IsDebug": true
+  },
+  {
+    "Name": "No Fill",
+    "Parameter": " -nofill",
+    "Description": "Skips outside filling. Faster, but leaks will not be detected or masked.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Not for final compiles.",
+    "IsDebug": true
+  },
+  {
+    "Name": "No Clip",
+    "Parameter": " -noclip",
+    "Description": "Skip clipnode generation. Must match the -noclip setting used in HLCSG.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "No Hull 1",
+    "Parameter": " -nohull1",
+    "Description": "Don't generate clip hull 1 (standard player-sized collision hull).",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Only skip this if you know the map doesn't need standard player collision."
+  },
+  {
+    "Name": "No Hull 2",
+    "Parameter": " -nohull2",
+    "Description": "Don't generate clip hull 2 (large/ducking collision hull).",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Only skip this if you know the map doesn't need this collision hull."
+  },
+  {
+    "Name": "No Hull 3",
+    "Parameter": " -nohull3",
+    "Description": "Don't generate clip hull 3 (point-sized collision hull, used for hitscan/trace checks).",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Only skip this if you know the map doesn't need this collision hull."
+  },
+  {
+    "Name": "No Opt",
+    "Parameter": " -noopt",
+    "Description": "Disables automatic removal of unused planes from the output BSP.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "No T-Junc",
+    "Parameter": " -notjunc",
+    "Description": "Don't fix up t-junctions.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Debugging option, not for normal use.",
+    "IsDebug": true
+  },
+  {
+    "Name": "No Null Texture Strip",
+    "Parameter": " -nonulltex",
+    "Description": "Disables stripping of NULL-textured faces.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Max Node Size",
+    "Parameter": " -maxnodesize",
+    "Description": "Maximum portal node size. Smaller values BSP the world into more, smaller pieces.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Subdivide",
+    "Parameter": " -subdivide",
+    "Description": "Face subdivide size in units (default 240, min 64, max 512).",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Chart",
+    "Parameter": " -chart",
+    "Description": "Prints BSP statistics before writing the output.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Low Priority",
+    "Parameter": " -low",
+    "Description": "Runs HLBSP as a low-priority process.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "High Priority",
+    "Parameter": " -high",
+    "Description": "Runs HLBSP as a high-priority process.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Can freeze your computer while compiling."
+  },
+  {
+    "Name": "Threads",
+    "Parameter": " -threads",
+    "Description": "Manually overrides the number of CPU threads used.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  }
+]

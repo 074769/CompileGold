@@ -1,0 +1,12 @@
+{
+  "Name": "GAME",
+  "Path": "$gameEXE$",
+  "Order": 13.0,
+  "DoRun": false,
+  "ReadOutput": false,
+  "Description": "Launch the game with your map.",
+  "Warning": "",
+  "PresetDefault": false,
+  "BasisString": " -game $game$ +map $map$",
+  "SupportsBSP": true
+}

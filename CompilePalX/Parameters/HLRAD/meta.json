@@ -1,0 +1,13 @@
+{
+  "Name": "HLRAD",
+  "Path": "$hlradExe$",
+  "Order": 1.4,
+  "DoRun": true,
+  "ReadOutput": true,
+  "Description": "HLT RAD stage. Computes and applies lighting (GoldSrc equivalent of VRAD).",
+  "Warning": "",
+  "PresetDefault": false,
+  "BasisString": " $goldMapFile$",
+  "CheckExitCode": false,
+  "WorkingDirectory": "$binFolder$"
+}

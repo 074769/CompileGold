@@ -1,0 +1,108 @@
+[
+  {
+    "Name": "Only Entities",
+    "Parameter": " -onlyents",
+    "Description": "Only update entities, don't rebuild brush geometry. Conserves existing lighting/vis data.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Requires a previously compiled .bsp of the same map."
+  },
+  {
+    "Name": "No WAD Textures",
+    "Parameter": " -nowadtextures",
+    "Description": "Embeds all textures directly into the BSP instead of relying on external WAD files at runtime.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Increases BSP file size."
+  },
+  {
+    "Name": "WAD Include",
+    "Parameter": " -wadinclude",
+    "Description": "Forces textures from the named WAD to always be embedded into the BSP, even if -nowadtextures isn't set.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "Pass the WAD filename, e.g. sdhlt.wad"
+  },
+  {
+    "Name": "No WAD Autodetect",
+    "Parameter": " -nowadautodetect",
+    "Description": "SDHLT: disables automatic WAD detection (SDHLT enables wad autodetect by default regardless of other settings).",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Extension flag - only present in some HLT builds (e.g. SDHLT)."
+  },
+  {
+    "Name": "No Clip",
+    "Parameter": " -noclip",
+    "Description": "Don't generate clipnodes (player collision hulls).",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "HLBSP must also be run with -noclip if used here."
+  },
+  {
+    "Name": "Clip Type",
+    "Parameter": " -cliptype",
+    "Description": "Clip hull generation method: legacy, normalized, simple, precise, or smallest.",
+    "Value": "precise",
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "World Extent",
+    "Parameter": " -worldextent",
+    "Description": "Extends the maximum map geometry bounds beyond the default +/-32768 units.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "Extension flag - only present in some HLT builds (e.g. SDHLT). Remove if your hlcsg.exe doesn't recognise it."
+  },
+  {
+    "Name": "Brush Union Threshold",
+    "Parameter": " -brushunion",
+    "Description": "Warns about overlapping brushes above this percentage of overlap (0-100). Mapper debugging aid.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "Slows down HLCSG considerably; leave unset for normal compiles.",
+    "IsDebug": true
+  },
+  {
+    "Name": "Texdata",
+    "Parameter": " -texdata",
+    "Description": "Increases the texture memory pool size, in KB, for maps with a large number of unique textures.",
+    "Value": "4096",
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Chart",
+    "Parameter": " -chart",
+    "Description": "Prints BSP statistics before writing the output.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Low Priority",
+    "Parameter": " -low",
+    "Description": "Runs HLCSG as a low-priority process.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "High Priority",
+    "Parameter": " -high",
+    "Description": "Runs HLCSG as a high-priority process.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Can freeze your computer while compiling."
+  },
+  {
+    "Name": "Threads",
+    "Parameter": " -threads",
+    "Description": "Manually overrides the number of CPU threads used.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  }
+]
