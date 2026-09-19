@@ -1,0 +1,33 @@
+name: 'Build (manual/push)'
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET SDK 10.0.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build & publish
+        run: dotnet publish /p:PublishProfile=PublishRelease
+
+      - name: Zip the build
+        run: |
+          Compress-Archive -Path "./CompilePalX/bin/Release/Deploy/*" -DestinationPath "./CompilePal-GoldSrc-SDHLT.zip"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CompilePal-GoldSrc-SDHLT
+          path: CompilePal-GoldSrc-SDHLT.zip
+          retention-days: 30
