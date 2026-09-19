@@ -42,10 +42,10 @@
   {
     "Name": "World Extent",
     "Parameter": " -worldextent",
-    "Description": "SDHLT: extends the maximum map geometry bounds beyond the default +/-32768 units.",
+    "Description": "Extends the maximum map geometry bounds beyond the default +/-32768 units.",
     "Value": null,
     "CanHaveValue": true,
-    "Warning": "SDHLT-specific parameter, not present in vanilla ZHLT."
+    "Warning": "Extension flag - only present in some HLT builds (e.g. SDHLT). Remove if your hlcsg.exe doesn't recognise it."
   },
   {
     "Name": "Brush Union Threshold",

@@ -1,10 +1,10 @@
 {
   "Name": "HLRAD",
-  "Path": "$binFolder$\\sdHLRAD.exe",
+  "Path": "$hlradExe$",
   "Order": 1.4,
   "DoRun": true,
   "ReadOutput": true,
-  "Description": "SDHLT RAD stage. Computes and applies lighting (GoldSrc equivalent of VRAD).",
+  "Description": "HLT RAD stage. Computes and applies lighting (GoldSrc equivalent of VRAD).",
   "Warning": "",
   "PresetDefault": false,
   "BasisString": " $goldMapFile$",

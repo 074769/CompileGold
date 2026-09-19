@@ -25,12 +25,21 @@ namespace CompilePalX
             text = text.Replace("$map$", FormatValue(Path.GetFileNameWithoutExtension(mapFile), quote));
             text = text.Replace("$bsp$", FormatValue(Path.ChangeExtension(mapFile, "bsp"), quote));
 
-            // The .map CompileGold's SDHLT tools (HLCSG/HLBSP/HLVIS/HLRAD) compile from.
+            // The .map the HLT compile tools (HLCSG/HLBSP/HLVIS/HLRAD) compile from.
             // HLFIX writes this next to the source .rmf; every step after HLFIX in the
             // compile chain reads from here instead of the originally selected file.
             text = text.Replace("$goldMapFile$", FormatValue(Path.ChangeExtension(mapFile, "map"), quote));
 
             text = text.Replace("$mapCopyLocation$", FormatValue(Path.Combine(GameConfiguration.MapFolder, Path.ChangeExtension(Path.GetFileName(mapFile), "bsp")), quote));
+
+            // GoldSrc/HLT compile tool executables. These are combined and quoted as a single
+            // unit (rather than "$binFolder$\toolname.exe" split across a Path field) so the
+            // quoting stays correct even when BinFolder itself contains spaces or apostrophes.
+            text = text.Replace("$hlfixExe$", FormatValue(Path.Combine(GameConfiguration.BinFolder, "hlfix.exe"), quote));
+            text = text.Replace("$hlcsgExe$", FormatValue(Path.Combine(GameConfiguration.BinFolder, "hlcsg.exe"), quote));
+            text = text.Replace("$hlbspExe$", FormatValue(Path.Combine(GameConfiguration.BinFolder, "hlbsp.exe"), quote));
+            text = text.Replace("$hlvisExe$", FormatValue(Path.Combine(GameConfiguration.BinFolder, "hlvis.exe"), quote));
+            text = text.Replace("$hlradExe$", FormatValue(Path.Combine(GameConfiguration.BinFolder, "hlrad.exe"), quote));
 
             text = text.Replace("$game$", FormatValue(GameConfiguration.GameFolder, quote));
             text = text.Replace("$gameEXE$", FormatValue(GameConfiguration.GameEXE, quote));

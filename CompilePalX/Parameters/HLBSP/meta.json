@@ -1,10 +1,10 @@
 {
   "Name": "HLBSP",
-  "Path": "$binFolder$\\sdHLBSP.exe",
+  "Path": "$hlbspExe$",
   "Order": 1.2,
   "DoRun": true,
   "ReadOutput": true,
-  "Description": "SDHLT BSP stage. Builds the BSP tree and checks for leaks.",
+  "Description": "HLT BSP stage. Builds the BSP tree and checks for leaks.",
   "Warning": "",
   "PresetDefault": false,
   "BasisString": " $goldMapFile$",

@@ -18,10 +18,10 @@
   {
     "Name": "No Fix Portal File",
     "Parameter": " -nofixprt",
-    "Description": "SDHLT: disables the .prt portal-file optimisation used for direct import into the J.A.C.K. map editor.",
+    "Description": "Disables the .prt portal-file optimisation used for direct import into the J.A.C.K. map editor.",
     "Value": null,
     "CanHaveValue": false,
-    "Warning": "SDHLT-specific parameter, not present in vanilla ZHLT."
+    "Warning": "Extension flag - only present in some HLT builds (e.g. SDHLT). Remove if your hlvis.exe doesn't recognise it."
   },
   {
     "Name": "Chart",

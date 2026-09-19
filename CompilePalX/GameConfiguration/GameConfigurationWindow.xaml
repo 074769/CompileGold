@@ -19,7 +19,7 @@
                 <TextBox Template="{StaticResource LabeledTextbox}" Text="{Binding Path=Name, Mode=TwoWay}" Tag="Name" Name="Name"/>
                 <TextBox Template="{StaticResource LabeledTextbox}" Text="{Binding Path=SteamAppID, Mode=TwoWay}" Tag="App ID" ToolTip="Steam App ID. Used to determine which processes/parameters are compatible with the current game. Can be found on https://steamdb.info/apps/"/>
                 <TextBox Template="{StaticResource LabeledTextbox}" Text="{Binding Path=GameFolder, Mode=TwoWay}" Tag="Game Folder" ToolTip="Path to your mod folder.&#x0a;Ex. C:\Half-Life\your_mod" />
-                <TextBox Template="{StaticResource LabeledTextbox}" Text="{Binding Path=BinFolder, Mode=TwoWay}" Tag="Bin Folder" ToolTip="Path to the folder containing sdHLCSG.exe, sdHLBSP.exe, sdHLVIS.exe, sdHLRAD.exe and hlfix.exe." />
+                <TextBox Template="{StaticResource LabeledTextbox}" Text="{Binding Path=BinFolder, Mode=TwoWay}" Tag="Bin Folder" ToolTip="Path to the folder containing hlcsg.exe, hlbsp.exe, hlvis.exe, hlrad.exe and hlfix.exe." />
                 <TextBox Template="{StaticResource LabeledTextbox}" Text="{Binding Path=GameEXE, Mode=TwoWay}" Tag="Game EXE" ToolTip="Path to the GoldSrc game EXE (used to launch the map after compiling).&#x0a;Ex. C:\Half-Life\hl.exe" />
                 <TextBox Template="{StaticResource LabeledTextbox}" Text="{Binding Path=MapFolder, Mode=TwoWay}" Tag="Map Folder" ToolTip="Path to the mod's maps folder. The compiled BSP is copied here.&#x0a;Ex. C:\Half-Life\your_mod\maps" />
                 <TextBox Template="{StaticResource LabeledTextbox}" Text="{Binding Path=SDKMapFolder, Mode=TwoWay}" Tag="SDK Map Folder" ToolTip="Path to the folder containing your RMF source files." />
