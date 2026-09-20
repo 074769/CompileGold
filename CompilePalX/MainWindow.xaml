@@ -31,7 +31,7 @@
 
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
-            <Button Click="UnsupportedPlatformButton_OnClick" Foreground="{StaticResource CompilePal.Brushes.Warning}" ToolTip="Unsupported Platform" x:Name="UnsupportedPlatformButton" Visibility="Collapsed">
+            <Button Click="UnsupportedPlatformButton_OnClick" Foreground="{DynamicResource CompilePal.Brushes.Warning}" ToolTip="Unsupported Platform" x:Name="UnsupportedPlatformButton" Visibility="Collapsed">
                 <iconPacks:Material Kind="Alert" />
             </Button>
             <Button Click="DarkModeButton_OnClick" ToolTip="Toggle Dark Mode" x:Name="DarkModeButton">
@@ -74,7 +74,7 @@
                                 <Style TargetType="TextBlock">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding Path=Compile}" Value="False">
-                                            <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.TextDisabled}"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.TextDisabled}"/>
                                         </DataTrigger>
                                         <MultiDataTrigger>
                                             <MultiDataTrigger.Conditions>
@@ -82,7 +82,7 @@
                                                 <Condition Binding="{Binding Path=Compile}" Value="False"/>
                                             </MultiDataTrigger.Conditions>
                                             <MultiDataTrigger.Setters>
-                                                <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.IdealForegroundDisabled}"></Setter>
+                                                <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.IdealForegroundDisabled}"></Setter>
                                             </MultiDataTrigger.Setters>
                                         </MultiDataTrigger>
                                     </Style.Triggers>
@@ -92,10 +92,10 @@
                         <TextBlock Text="{Binding Path=Preset.Name, StringFormat=({0})}" Margin="0, 0, 5, 0" FontWeight="SemiBold" Name="selectedPreset">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
-                                    <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Gray1}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.Gray1}"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding Path=Compile}" Value="False">
-                                            <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Gray3}"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.Gray3}"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -106,7 +106,7 @@
                     <DataTemplate.Triggers>
                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
                             <Setter Property="Opacity" Value="0.7" TargetName="selectedPreset"/>
-                            <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.IdealForeground}" TargetName="selectedPreset"/>
+                            <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.IdealForeground}" TargetName="selectedPreset"/>
                         </DataTrigger>
                     </DataTemplate.Triggers>
                 </DataTemplate>
@@ -117,14 +117,14 @@
         <GridSplitter Grid.Row="1" Height="3" HorizontalAlignment="Stretch" Width="512"/>
         <controls:MetroTabControl Grid.Row="2" controls:TabControlHelper.Underlined="SelectedTabItem" controls:TabControlHelper.Transition="LeftReplace" Margin="10,10,10,40">
             <controls:MetroTabItem Header="CONFIG">
-                <Grid Background="{StaticResource CompilePal.Brushes.GridBackground}">
+                <Grid Background="{DynamicResource CompilePal.Brushes.GridBackground}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" MinWidth="135"/>
                         <ColumnDefinition Width="Auto" MinWidth="135"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <DockPanel Grid.Column="0" Margin="10,10,0,10" Background="{StaticResource CompilePal.Brushes.DockBackground}">
-                        <DockPanel DockPanel.Dock="Top" Background="{StaticResource CompilePal.Brushes.GridBackground}" Height="30" Margin="0, -5, 0, 0">
+                    <DockPanel Grid.Column="0" Margin="10,10,0,10" Background="{DynamicResource CompilePal.Brushes.DockBackground}">
+                        <DockPanel DockPanel.Dock="Top" Background="{DynamicResource CompilePal.Brushes.GridBackground}" Height="30" Margin="0, -5, 0, 0">
                             <Button x:Name="AddPresetButton" MinHeight="25" Height="25" Width="25" Padding="0" Margin="0, 0, 0, 5" Click="AddPresetButton_Click" ToolTip="Add Preset" DockPanel.Dock="Right">
                                 <iconPacks:Material Kind="Plus" Height="10" Width="10"/>
                             </Button>
@@ -146,11 +146,11 @@
                                                         <iconPacks:Material Kind="FilterRemove" Height="10" Width="10"/>
                                                     </Setter.Value>
                                                 </Setter>
-                                                <Setter Property="Background" Value="{StaticResource MahApps.Brushes.Gray10}"/>
+                                                <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.Gray10}"/>
                                                 <Setter Property="ToolTip" Value="Show All Presets"/>
                                             </Trigger>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="{StaticResource MahApps.Brushes.Button.Square.Background.MouseOver}"/>
+                                                <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.Button.Square.Background.MouseOver}"/>
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>
@@ -250,28 +250,28 @@
                                                         <Trigger Property="IsFocused" Value="True">
                                                             <Setter Property="Background">
                                                                 <Setter.Value>
-                                                                    <SolidColorBrush Color="{StaticResource MahApps.Colors.Gray10}" Opacity="0.25"/>
+                                                                    <SolidColorBrush Color="{DynamicResource MahApps.Colors.Gray10}" Opacity="0.25"/>
                                                                 </Setter.Value>
                                                             </Setter>
                                                         </Trigger>
                                                         <Trigger Property="IsMouseOver" Value="True">
                                                             <Setter Property="Background">
                                                                 <Setter.Value>
-                                                                    <SolidColorBrush Color="{StaticResource MahApps.Colors.Gray10}" Opacity="0.4"/>
+                                                                    <SolidColorBrush Color="{DynamicResource MahApps.Colors.Gray10}" Opacity="0.4"/>
                                                                 </Setter.Value>
                                                             </Setter>
                                                         </Trigger>
                                                         <Trigger Property="IsKeyboardFocusWithin" Value="True">
                                                             <Setter Property="Background">
                                                                 <Setter.Value>
-                                                                    <SolidColorBrush Color="{StaticResource MahApps.Colors.Gray10}" Opacity="0.25"/>
+                                                                    <SolidColorBrush Color="{DynamicResource MahApps.Colors.Gray10}" Opacity="0.25"/>
                                                                 </Setter.Value>
                                                             </Setter>
                                                         </Trigger>
                                                         <Trigger Property="IsPressed" Value="True">
                                                             <Setter Property="Background">
                                                                 <Setter.Value>
-                                                                    <SolidColorBrush Color="{StaticResource MahApps.Colors.Gray10}" Opacity="0.25"/>
+                                                                    <SolidColorBrush Color="{DynamicResource MahApps.Colors.Gray10}" Opacity="0.25"/>
                                                                 </Setter.Value>
                                                             </Setter>
                                                         </Trigger>
@@ -306,8 +306,8 @@
                             </ListBox.GroupStyle>
                         </ListBox>
                     </DockPanel>
-                    <DockPanel Grid.Column="1" Margin="10,10,0,10" Background="{StaticResource CompilePal.Brushes.DockBackground}">
-                        <DockPanel DockPanel.Dock="Top" Background="{StaticResource CompilePal.Brushes.GridBackground}" Height="30" Margin="0, -5, 0, 0">
+                    <DockPanel Grid.Column="1" Margin="10,10,0,10" Background="{DynamicResource CompilePal.Brushes.DockBackground}">
+                        <DockPanel DockPanel.Dock="Top" Background="{DynamicResource CompilePal.Brushes.GridBackground}" Height="30" Margin="0, -5, 0, 0">
                             <Button x:Name="AddProcessesButton" MinHeight="25" Height="25" Width="25" Padding="0" Margin="0, 0, 0, 5" Click="AddProcessButton_Click"  DockPanel.Dock="Right" ToolTip="Add Process">
                                 <iconPacks:Material Kind="Plus" Height="10" Width="10"/>
                             </Button>
@@ -371,7 +371,7 @@
                             <RowDefinition Height="35px"/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
-                        <DockPanel Background="{StaticResource CompilePal.Brushes.GridBackground}" Height="25" Margin="10, 0, 10, 0">
+                        <DockPanel Background="{DynamicResource CompilePal.Brushes.GridBackground}" Height="25" Margin="10, 0, 10, 0">
                             <TextBlock TextAlignment="Right" FontSize="16" Margin="0, 0, 0, 0" FontWeight="SemiBold" DockPanel.Dock="Left">Parameters</TextBlock>
                             <Button Name="AddParameterButton" DockPanel.Dock="Right" MinHeight="25" Width="25" Padding="0" Margin="0, 0, 3, 0" Click="AddParameterButton_Click" ToolTip="Add Parameter">
                                 <iconPacks:Material Kind="Plus" Height="10" Width="10"/>
@@ -382,7 +382,7 @@
                             <Button Name="AddCustomParameterButton" DockPanel.Dock="Right" MinHeight="25" Width="25" Padding="0" Margin="0, 0, 3, 0" Click="AddCustomParameterButton_Click" ToolTip="Add Custom Parameter" IsEnabled="{Binding AddCustomParameterButtonEnabled, ElementName=CompileWindow, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}">
                                 <iconPacks:Material Kind="PlaylistPlus" Height="10" Width="10"/>
                             </Button>
-                            <TextBox Name="ParametersTextBox" Margin="20,0, 20,0" IsEnabled="True" IsReadOnly="True" Background="{StaticResource MahApps.Brushes.Gray.SemiTransparent}" FontWeight="DemiBold" BorderThickness="0"/>
+                            <TextBox Name="ParametersTextBox" Margin="20,0, 20,0" IsEnabled="True" IsReadOnly="True" Background="{DynamicResource MahApps.Brushes.Gray.SemiTransparent}" FontWeight="DemiBold" BorderThickness="0"/>
                         </DockPanel>
                         <DataGrid Grid.Row ="1" Name="ConfigDataGrid" Margin="10,0,10,10" AutoGenerateColumns="False" CanUserAddRows="False" ItemsSource="{Binding}">
                             <DataGrid.Columns>
@@ -391,7 +391,7 @@
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="{Binding Name}" Margin="5, 0, 5, 0"/>
-                                                <iconPacks:PackIconMaterial Kind="Alert" Foreground="{StaticResource CompilePal.Brushes.Warning}" Margin="0, 0, 5, 0" ToolTip="This parameter is potentially incompatible with the current game">
+                                                <iconPacks:PackIconMaterial Kind="Alert" Foreground="{DynamicResource CompilePal.Brushes.Warning}" Margin="0, 0, 5, 0" ToolTip="This parameter is potentially incompatible with the current game">
                                                     <iconPacks:PackIconMaterial.Style>
                                                         <Style TargetType="iconPacks:PackIconMaterial">
                                                             <Setter Property="Visibility" Value="Collapsed"/>
@@ -502,7 +502,7 @@
                                         <Style TargetType="DataGridCell">
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding IsDraggable}" Value="False">
-                                                    <Setter Property="Background" Value="{StaticResource CompilePal.Brushes.GridBackground}"/>
+                                                    <Setter Property="Background" Value="{DynamicResource CompilePal.Brushes.GridBackground}"/>
                                                     <Setter Property="BorderThickness" Value="0"/>
                                                     <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                                                     <Setter Property="Foreground" Value="Black"/>
@@ -533,7 +533,7 @@
                 </Grid>
             </controls:MetroTabItem>
             <controls:MetroTabItem Name="OutputTab" Header="OUTPUT">
-                <Grid Background="{StaticResource CompilePal.Brushes.GridBackground}">
+                <Grid Background="{DynamicResource CompilePal.Brushes.GridBackground}">
                     <RichTextBox IsReadOnly="True" x:Name="CompileOutputTextbox" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" BorderThickness="0" Margin="10,10,10,10" FontFamily="Cascadia Code PL, Segoe UI, Lucida Sans Unicode, Verdana" Typography.StandardLigatures="True" IsReadOnlyCaretVisible="True" Block.LineHeight="2" IsDocumentEnabled="True">
                         <RichTextBox.Document>
                             <FlowDocument>
@@ -553,7 +553,7 @@
             <Button Name="CompileStartStopButton" Content="Compile" Margin="5,10,0,6" Width="75" Click="CompileStartStopButton_OnClick" IsEnabled="{Binding ElementName=MapListBox, Path=Items.Count}"/>
         </StackPanel>
         <Label Name="UpdateLabel" Visibility="Collapsed"  Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10" MouseLeftButtonUp="UpdateLabel_MouseLeftButtonUp" >
-            <Hyperlink Name="UpdateHyperLink" NavigateUri="https://github.com/ruarai/CompilePal/releases/latest" RequestNavigate="UpdateHyperLink_OnRequestNavigate" Foreground="{StaticResource CompilePal.Brushes.Link}"/>
+            <Hyperlink Name="UpdateHyperLink" NavigateUri="https://github.com/ruarai/CompilePal/releases/latest" RequestNavigate="UpdateHyperLink_OnRequestNavigate" Foreground="{DynamicResource CompilePal.Brushes.Link}"/>
         </Label>
         <Label Name="TimeElapsedLabel" Visibility="Collapsed" Grid.Row="2" VerticalAlignment="Bottom" FontWeight="Bold" HorizontalAlignment="Left" Margin="10" />
     </Grid>

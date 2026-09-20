@@ -16,7 +16,7 @@
                 <iconPacks:Material Kind="HelpRhombus" Height="40" Width="40"/>
             </Grid>
             <TextBlock HorizontalAlignment="Center" FontWeight="Bold" FontSize="14">No Game Configurations Found</TextBlock>
-            <TextBlock HorizontalAlignment="Center" Margin="0, 5, 0,10">Launch Hammer for the game you want to compile for and click <Hyperlink Foreground="{StaticResource CompilePal.Brushes.Link}" Click="RefreshButton_OnClick">refresh</Hyperlink></TextBlock>
+            <TextBlock HorizontalAlignment="Center" Margin="0, 5, 0,10">Launch Hammer for the game you want to compile for and click <Hyperlink Foreground="{DynamicResource CompilePal.Brushes.Link}" Click="RefreshButton_OnClick">refresh</Hyperlink></TextBlock>
             <TextBlock HorizontalAlignment="Center" FontWeight="Bold" FontSize="14">Or</TextBlock>
             <Button Margin="0, 10, 0, 0" Click="AddButton_OnClick">Add Game</Button>
         </StackPanel>
@@ -117,7 +117,7 @@
                                                         <Setter Property="Background">
                                                             <Setter.Value>
                                                                 <SolidColorBrush
-                                                                    Color="{StaticResource MahApps.Colors.Gray10}"
+                                                                    Color="{DynamicResource MahApps.Colors.Gray10}"
                                                                     Opacity="0.25" />
                                                             </Setter.Value>
                                                         </Setter>
@@ -126,7 +126,7 @@
                                                         <Setter Property="Background">
                                                             <Setter.Value>
                                                                 <SolidColorBrush
-                                                                    Color="{StaticResource MahApps.Colors.Gray10}"
+                                                                    Color="{DynamicResource MahApps.Colors.Gray10}"
                                                                     Opacity="0.4" />
                                                             </Setter.Value>
                                                         </Setter>
@@ -135,7 +135,7 @@
                                                         <Setter Property="Background">
                                                             <Setter.Value>
                                                                 <SolidColorBrush
-                                                                    Color="{StaticResource MahApps.Colors.Gray10}"
+                                                                    Color="{DynamicResource MahApps.Colors.Gray10}"
                                                                     Opacity="0.25" />
                                                             </Setter.Value>
                                                         </Setter>
@@ -144,7 +144,7 @@
                                                         <Setter Property="Background">
                                                             <Setter.Value>
                                                                 <SolidColorBrush
-                                                                    Color="{StaticResource MahApps.Colors.Gray10}"
+                                                                    Color="{DynamicResource MahApps.Colors.Gray10}"
                                                                     Opacity="0.25" />
                                                             </Setter.Value>
                                                         </Setter>

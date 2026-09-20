@@ -52,12 +52,56 @@ toggle) came from `CompilePalTheme.xaml` hardcoding `ThemeForeground`, `ThemeBac
 tokens anymore (they're left to the active base theme), and giving the dark variant its own
 dark-appropriate grid-row and disabled-checkbox colors.
 
-Because most of this app's brushes are `StaticResource` with `Freeze="True"` (baked in at load
-time, not live-updating), toggling dark mode saves the preference and restarts the app rather
-than trying to repaint everything live - more reliable than a partial live swap.
+The toggle is now a **live** switch, no restart. That required converting every place the app
+consumes a theme brush/color (`MahApps.Brushes.*`, `MahApps.Colors.*`, `CompilePal.Brushes.*`)
+from `StaticResource` to `DynamicResource` across `App.xaml`, `MainWindow.xaml`,
+`ParameterAdder.xaml`, `ProcessAdder.xaml`, `LaunchWindow.xaml`, and `PresetDialog.xaml` -
+`StaticResource` resolves once at load and won't react to a dictionary swap, `DynamicResource`
+does. Style resources (`MahApps.Styles.*`, `GroupListBoxStyle`, etc.) were left as
+`StaticResource` since only colors need to react to the swap. `App.ApplyTheme()` then simply
+replaces both the base MahApps dictionary and the `CompilePalTheme.Light/Dark.xaml` overlay in
+`Application.Resources.MergedDictionaries` - this is the same technique MahApps' own
+`ThemeManager` uses internally (some of its own control templates, like window buttons, were
+already `DynamicResource` for exactly this reason).
 
 **Unverified**: this relies on MahApps shipping `dark.red.xaml` alongside the `light.red.xaml`
-this project already uses (very standard convention, but I can't build here to confirm).
+this project already uses (very standard convention, but I can't build here to confirm), and I
+haven't been able to actually run the live swap to watch it repaint.
+
+## Resource packaging (RESGEN)
+
+GoldSrc doesn't have a pak lump the way Source's BSPs do, so CompileGold doesn't pack anything
+into the `.bsp`. Instead, a new **RESGEN** step runs right after HLRAD and:
+
+1. Parses the freshly compiled `.bsp` directly (GoldSrc BSPVERSION 30 - header, lump directory,
+   entities text lump, miptex lump) rather than shelling out to another tool
+2. Scans every entity's key/value pairs for anything that looks like a resource path (`.mdl`,
+   `.spr`, `.wav`, `.tga`, `.bmp`, `.wad`, `.txt`, etc. by extension - not an exhaustive
+   FGD-driven per-entity-class table, since I don't have one I can fully verify), plus a special
+   case for `skyname` (expands to the 6 `gfx/env/<name><suffix>.tga` files)
+3. Checks the miptex lump for any texture with no embedded pixel data; if it finds one, it reads
+   worldspawn's `wad` key and adds those WAD filenames as dependencies too (skipped entirely if
+   every texture is embedded, e.g. you compiled with `-nowadtextures`)
+4. Looks for `<mapname>_detail.txt` next to your `.rmf`/`.map` (SDHLT detail props) - includes it
+   in the zip if present, and scans its text with the same extension heuristic for further
+   dependencies
+5. Resolves every discovered path against your mod folder, then (unless disabled) against the
+   base game folder next to it (e.g. `valve` next to `your_mod`) as a fallback
+6. Writes `<mapname>.res` (one relative path per line, `maps/<mapname>.bsp` listed first) and
+   `<mapname>_resources.zip` (the bsp, the .res, the detail.txt if present, and every resolved
+   dependency at its correct relative path) next to your source `.rmf`
+
+Anything it can't find gets logged as missing rather than silently dropped. Use the **Extra
+File** option (repeatable - check it again for each additional path) to add dependencies the
+scan can't catch on its own: things referenced only through non-standard entity keys, resources
+loaded dynamically rather than declared in the map, or anything from inside a `.mdl`'s own
+internal texture/sound references (RESGEN doesn't parse model files themselves).
+
+This is new code, not a place I could point at prior art in the original CompilePal, and I
+can't run it against a real compiled map to confirm the BSP parsing is exactly right - the
+lump layout and entity-text format are stable, well-documented parts of the GoldSrc format, but
+if the `.res`/zip come out empty or wrong, paste me what RESGEN logged (turn on **Verbose Scan
+Log** first) and I'll fix it.
 
 ## What's different from CompilePal
 
@@ -81,7 +125,12 @@ this project already uses (very standard convention, but I can't build here to c
   checkbox you can toggle directly - checking/unchecking adds or removes it from the active
   preset immediately, no extra "add" step. A dropdown at the top of that window defaults to
   **Hide Debugging Options** (things like `-chart`, `-leakonly`, `-nt`/`-nd`/`-nu`/`-na`) and can
-  be switched to **Show All Options**.
+  be switched to **Show All Options**. Repeatable options (RESGEN's "Extra File", CUSTOM's
+  "Command Line Argument") don't stay checked - each click adds one more instance, since a
+  plain toggle can't represent "added three times with three different values"; edit each
+  instance's value afterwards in the main parameter list.
+- **GoldSrc resource packaging (RESGEN)**: generates a `.res` and a dependency zip for
+  distribution instead of packing anything into the bsp - see the section above.
 
 ## Setting up a game configuration
 

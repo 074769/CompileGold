@@ -44,14 +44,19 @@ namespace CompilePalX
             // used by IsCompatiblePropertyGroup via reflection, mirrors ConfigItem.IsCompatible
             public bool IsCompatible => Item.IsCompatible;
 
+            // Repeatable items (e.g. "Extra File", "Command Line Argument") can be added more
+            // than once with different values, so a plain checked/unchecked toggle doesn't fit -
+            // instead the getter always reports unchecked, and every check adds one more
+            // instance (edited afterwards in the main parameter list). Non-repeatable items
+            // behave as an ordinary present/absent toggle.
             public bool IsChecked
             {
-                get => activeItems.Any(i => i.Name == Item.Name);
+                get => !Item.CanBeUsedMoreThanOnce && activeItems.Any(i => i.Name == Item.Name);
                 set
                 {
                     if (value)
                     {
-                        if (Item.CanBeUsedMoreThanOnce || !IsChecked)
+                        if (Item.CanBeUsedMoreThanOnce || !activeItems.Any(i => i.Name == Item.Name))
                             activeItems.Add((ConfigItem)Item.Clone());
                     }
                     else

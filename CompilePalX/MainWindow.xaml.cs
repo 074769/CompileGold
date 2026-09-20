@@ -1081,22 +1081,7 @@ namespace CompilePalX
         {
             bool dark = !App.IsDarkMode;
             RegistryManager.Write("DarkMode", dark ? "1" : "0");
-
-            // Many brushes in this app are StaticResource with Freeze="True", which won't
-            // live-update when the merged dictionaries change - restart cleanly instead so
-            // everything (grid backgrounds, text, disabled states, etc.) picks up the new
-            // theme correctly from a fresh load.
-            string? exePath = Process.GetCurrentProcess().MainModule?.FileName;
-            if (exePath != null)
-            {
-                Process.Start(exePath);
-                Application.Current.Shutdown();
-            }
-            else
-            {
-                // fallback: apply live if we couldn't resolve our own exe path for a restart
-                App.ApplyTheme(dark);
-            }
+            App.ApplyTheme(dark);
         }
 
         private void ShowUnsupportedModal()
