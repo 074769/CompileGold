@@ -8,7 +8,7 @@
 
 <p align="center">CompileGold is an easy to use wrapper for the GoldSRC SDHLT map compiling tools.</p>
 
-![image](https://user-images.githubusercontent.com/15372675/219901251-38a9dc7a-ab95-42c4-9794-e811521a5e89.png)
+![image](https://github.com/074769/CompileGold/blob/471fe9cbf5fb873d00f795e90e39911725261412/%7BBBB9C8FB-5015-498F-BCFA-D3181F12478D%7D.png)
 
 
 
