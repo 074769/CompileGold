@@ -8,12 +8,12 @@ original CompilePal.
 
 ## Compile telemetry panel
 
-A new chart-icon button in the top-right toggles a side panel (300px, docked to the right of
-the main window) showing, per compile step: a green/red circle for pass/fail, time spent in
-seconds, and - for HLCSG/HLBSP/HLVIS/HLRAD/HLFIX specifically - the BSP limits usage report
-those tools print (the `models ( 0.2%)`, `* worldfaces ( 6.0%)` style block), each line
-color-graded white (0%) -> green (25%) -> yellow (50%) -> red (100%), linearly interpolated
-between those stops.
+A side panel (210px, always open, docked to the right of the main window) shows, per compile
+step: a green/red circle for pass/fail, time spent in seconds, and - for
+HLCSG/HLBSP/HLVIS/HLRAD/HLFIX specifically - the BSP limits usage report those tools print (the
+`models ( 0.2%)`, `* worldfaces ( 6.0%)` style block, on by default now via `-chart` - see below),
+each line color-graded white (0%) -> green (25%) -> yellow (50%) -> red (100%), linearly
+interpolated between those stops.
 
 How it's wired: `CompileExecutable` (the base class HLFIX/HLCSG/HLBSP/HLVIS/HLRAD/COPY/GAME all
 run through) now accumulates its full captured stdout into a `RawOutput` buffer as it streams,
@@ -98,6 +98,28 @@ already `DynamicResource` for exactly this reason).
 **Unverified**: this relies on MahApps shipping `dark.red.xaml` alongside the `light.red.xaml`
 this project already uses (very standard convention, but I can't build here to confirm), and I
 haven't been able to actually run the live swap to watch it repaint.
+
+## Recent fixes (round 2)
+
+- **Limits report wasn't appearing in the telemetry panel at all.** Two real bugs found:
+  1. `-chart` (the flag that makes HLCSG/HLBSP/HLVIS/HLRAD print the limits report in the first
+     place) wasn't enabled by default - it's an opt-in `ConfigItem`, and the GoldSrc preset
+     wasn't turning it on for anything. Now on by default for all four.
+  2. `CompileExecutable` redirected stderr (`RedirectStandardError = true`) but never actually
+     read from it anywhere - only stdout was captured. If any of these tools write that summary
+     to stderr rather than stdout (a common convention: primary output to stdout, diagnostics to
+     stderr), it would never have shown up in the log *or* the telemetry panel, regardless of
+     `-chart`. Fixed by reading both streams concurrently (sequential reads risk a classic
+     stdout/stderr pipe deadlock, so stderr now reads on a background thread while stdout reads
+     on the calling one, both feeding the same `RawOutput` buffer under a lock).
+- **Telemetry panel redesigned**: no more toggle button - it's always open now, and narrower
+  (210px instead of 300px) with tighter spacing/fonts to match.
+- **Window size and position now persist** across restarts (registry, same isolated
+  `HKCU\Software\CompileGold` key as everything else) - saves on close, restores on launch.
+  Maximized state round-trips too (using `RestoreBounds` rather than the maximized size, so
+  un-maximizing later lands somewhere sensible instead of at screen-filling dimensions). A
+  saved position is only restored if it would still land on-screen, in case you last had it on
+  a monitor that isn't connected anymore.
 
 ## Recent fixes
 

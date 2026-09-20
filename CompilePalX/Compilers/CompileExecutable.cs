@@ -13,8 +13,9 @@ namespace CompilePalX.Compilers
 {
     class CompileExecutable(string metadata, string? parameterFolder = null) : CompileProcess(metadata, parameterFolder)
     {
-        /// <summary>Full captured stdout for this run, used to parse the BSP limits report for the telemetry panel.</summary>
+        /// <summary>Full captured stdout+stderr for this run, used to parse the BSP limits report for the telemetry panel.</summary>
         public StringBuilder RawOutput { get; } = new();
+        private readonly object rawOutputLock = new();
 
         public override void Run(CompileContext c, CancellationToken cancellationToken)
         {
@@ -97,6 +98,21 @@ namespace CompilePalX.Compilers
 
         private void ReadOutput(CancellationToken cancellationToken)
         {
+            // stdout and stderr are read concurrently (not one after the other) - draining
+            // only one while the process blocks writing to the other's now-full pipe buffer
+            // is a classic deadlock. Some HLT tools write their summary/limits report to
+            // stderr rather than stdout, so both need capturing either way.
+            var stderrTask = Task.Run(() => ReadStream(Process.StandardError, cancellationToken), cancellationToken);
+            ReadStream(Process.StandardOutput, cancellationToken);
+
+            try { stderrTask.Wait(cancellationToken); }
+            catch (OperationCanceledException) { }
+
+            Process.WaitForExit();
+        }
+
+        private void ReadStream(StreamReader stream, CancellationToken cancellationToken)
+        {
             char[] buffer = new char [256];
             Task<int>? read = null;
             while (true)
@@ -105,7 +121,7 @@ namespace CompilePalX.Compilers
                     return;
 
                 if (read == null)
-                    read = Process.StandardOutput.ReadAsync(buffer, 0, buffer.Length);
+                    read = stream.ReadAsync(buffer, 0, buffer.Length);
 
                 read.Wait(100, cancellationToken); // an arbitrary timeout
 
@@ -115,19 +131,18 @@ namespace CompilePalX.Compilers
                     {
                         string text = new (buffer, 0, read.Result);
                         CompilePalLogger.LogProgressive(text);
-                        RawOutput.Append(text);
+                        lock (rawOutputLock)
+                            RawOutput.Append(text);
 
                         read = null; // task completed so we need to create a new one
                         continue;
                     }
 
-                    // got -1, process ended
+                    // got 0, stream ended
                     break;
                 }
 
             }
-
-            Process.WaitForExit();
         }
     }
 }

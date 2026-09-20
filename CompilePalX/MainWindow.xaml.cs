@@ -96,6 +96,8 @@ namespace CompilePalX
 
             InitializeComponent();
 
+            RestoreWindowState();
+
             ActiveDispatcher = Dispatcher;
 
             CompilePalLogger.OnWrite += Logger_OnWrite;
@@ -691,6 +693,62 @@ namespace CompilePalX
             }
         }
 
+        /// <summary>Restores window size, position and maximized state saved by SaveWindowState(), if any.</summary>
+        private void RestoreWindowState()
+        {
+            try
+            {
+                if (double.TryParse(RegistryManager.Read<string>("WindowWidth"), NumberStyles.Float, CultureInfo.InvariantCulture, out double width) && width >= MinWidth)
+                    Width = width;
+                if (double.TryParse(RegistryManager.Read<string>("WindowHeight"), NumberStyles.Float, CultureInfo.InvariantCulture, out double height) && height >= MinHeight)
+                    Height = height;
+
+                if (double.TryParse(RegistryManager.Read<string>("WindowLeft"), NumberStyles.Float, CultureInfo.InvariantCulture, out double left) &&
+                    double.TryParse(RegistryManager.Read<string>("WindowTop"), NumberStyles.Float, CultureInfo.InvariantCulture, out double top))
+                {
+                    // only restore position if it would still land visibly on screen -
+                    // e.g. a monitor that was connected last time might not be now
+                    var workArea = SystemParameters.WorkArea;
+                    if (left + 100 > workArea.Left && left < workArea.Right - 100 &&
+                        top + 100 > workArea.Top && top < workArea.Bottom - 100)
+                    {
+                        Left = left;
+                        Top = top;
+                        WindowStartupLocation = WindowStartupLocation.Manual;
+                    }
+                }
+
+                if (RegistryManager.Read<string>("WindowMaximized") == "1")
+                    WindowState = WindowState.Maximized;
+            }
+            catch (Exception e)
+            {
+                ExceptionHandler.LogException(e);
+            }
+        }
+
+        /// <summary>Saves window size, position and maximized state so RestoreWindowState() can bring them back next launch.</summary>
+        private void SaveWindowState()
+        {
+            try
+            {
+                bool maximized = WindowState == WindowState.Maximized;
+                // use RestoreBounds instead of Width/Height/Left/Top when maximized, so
+                // un-maximizing later still lands on a sensible size instead of the maximized one
+                Rect bounds = maximized ? RestoreBounds : new Rect(Left, Top, Width, Height);
+
+                RegistryManager.Write("WindowWidth", bounds.Width.ToString(CultureInfo.InvariantCulture));
+                RegistryManager.Write("WindowHeight", bounds.Height.ToString(CultureInfo.InvariantCulture));
+                RegistryManager.Write("WindowLeft", bounds.X.ToString(CultureInfo.InvariantCulture));
+                RegistryManager.Write("WindowTop", bounds.Y.ToString(CultureInfo.InvariantCulture));
+                RegistryManager.Write("WindowMaximized", maximized ? "1" : "0");
+            }
+            catch (Exception e)
+            {
+                ExceptionHandler.LogException(e);
+            }
+        }
+
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             // prevent users from accidentally closing during a compile
@@ -703,6 +761,8 @@ namespace CompilePalX
                     return;
                 }
             }
+
+            SaveWindowState();
 
             ConfigurationManager.SavePresets();
             ConfigurationManager.SaveProcesses();
@@ -1084,12 +1144,7 @@ namespace CompilePalX
             App.ApplyTheme(dark);
         }
 
-        private void TelemetryButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            TelemetryPanel.Visibility = TelemetryPanel.Visibility == Visibility.Visible
-                ? Visibility.Collapsed
-                : Visibility.Visible;
-        }
+
 
         private void ShowUnsupportedModal()
         {
