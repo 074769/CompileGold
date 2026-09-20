@@ -1,12 +1,12 @@
 <p align="center">
 	<img
-		alt="Compile Pal"
+		alt="CompileGold"
 		src="http://i.imgur.com/jPEig83.png"
 		width="400"
 	/>
 </p>
 
-<p align="center">Compile Pal is an easy to use wrapper for the Source Engine map compiling tools.</p>
+<p align="center">CompileGold is an easy to use wrapper for the GoldSRC SDHLT map compiling tools.</p>
 
 ![image](https://user-images.githubusercontent.com/15372675/219901251-38a9dc7a-ab95-42c4-9794-e811521a5e89.png)
 
@@ -28,9 +28,6 @@ Get the latest features without having to wait. Experimental releases may be uns
 * Packing
 * Error Checking
 * Not freezing your computer while compiling
-* Cubemaps
-* Manifest Generation
-* Nav File Generation
 * Plugins and Custom Compile Steps
 * Batch Compiling
 * Much More!
@@ -43,7 +40,6 @@ Get the latest features without having to wait. Experimental releases may be uns
 * [Custom Compile Step Collection](Guides/CustomCollection.md)
 * [Command Line Arguments](Guides/CMDArgs.md)
 * [Registry Values](Guides/Registry.md)
-* [VScript Packing Hints](Guides/VScript.md)
 
 ## Contributing
 
