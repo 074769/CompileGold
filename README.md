@@ -1,4 +1,4 @@
-<p align="center">
+<p align="center">Compile Gold</p>
 ![image](https://github.com/074769/CompileGold/blob/2582c20eb35b0fc37b442f47d7851126ef0b97cd/Lmao.jpeg)
 	/>
 </p>
