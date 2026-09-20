@@ -16,12 +16,12 @@
 
 
 ## Features
-* Packing
+* Packing (Next Update)
 * Error Checking (Use google)
-* Not freezing your computer while compiling
-* Plugins and Custom Compile Steps
+* Not freezing your computer while compiling (skill issue)
+* Plugins and Custom Compile Steps (Shrugs)
 * Batch Compiling
-* Much More!
+* Much More! (?)
 
 ## Guides
 * [Quick Start](Guides/QuickStart.md)
