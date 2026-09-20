@@ -12,12 +12,7 @@
 
 #### Latest Release
 
-[Compile Pal V29](https://github.com/ruarai/CompilePal/releases/latest)
-
-#### Experimental Releases
-Get the latest features without having to wait. Experimental releases may be unstable, use at your own risk.
-
-[Compile Pal V29.1](https://github.com/ruarai/CompilePal/releases/tag/v029.1)
+[Compile Gold V0.1](https://github.com/074769/CompileGold/releases)
 
 
 ## Features
