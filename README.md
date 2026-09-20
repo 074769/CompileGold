@@ -1,6 +1,5 @@
 <p align="center">Compile Gold </p>
 ![image](https://github.com/074769/CompileGold/blob/d6189c733e442977bd0c53c7f4ae69371a9a2044/Lmao.png)
-</p>
 
 <p align="center">CompileGold is an easy to use wrapper for the GoldSRC SDHLT map compiling tools.</p>
 
