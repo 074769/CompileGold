@@ -6,6 +6,28 @@ SDHLT, etc. - anything shipping `hlcsg.exe`/`hlbsp.exe`/`hlvis.exe`/`hlrad.exe`/
 those standard names). It shares no identity, settings, telemetry, or update channel with the
 original CompilePal.
 
+## Compile telemetry panel
+
+A new chart-icon button in the top-right toggles a side panel (300px, docked to the right of
+the main window) showing, per compile step: a green/red circle for pass/fail, time spent in
+seconds, and - for HLCSG/HLBSP/HLVIS/HLRAD/HLFIX specifically - the BSP limits usage report
+those tools print (the `models ( 0.2%)`, `* worldfaces ( 6.0%)` style block), each line
+color-graded white (0%) -> green (25%) -> yellow (50%) -> red (100%), linearly interpolated
+between those stops.
+
+How it's wired: `CompileExecutable` (the base class HLFIX/HLCSG/HLBSP/HLVIS/HLRAD/COPY/GAME all
+run through) now accumulates its full captured stdout into a `RawOutput` buffer as it streams,
+alongside the existing live log display. `CompilingManager`'s per-step loop times each `Run()`
+call with a `Stopwatch`, checks that step's `CompileErrors` for anything `Error` severity or
+worse to decide pass/fail, and regex-parses `RawOutput` for the limits-report lines
+(`^\s*(\*\s*)?([A-Za-z][A-Za-z0-9_]*)\s*\(\s*([\d.]+)\s*%\)\s*$`) - all pushed into a static
+`TelemetryManager.Entries` collection the panel's `ItemsControl` binds to directly (the same
+`{x:Static ...}` pattern this app already uses for `OrderManager.CurrentOrder`). Cleared at the
+start of each compile run.
+
+RESGEN/PACK/SHUTDOWN/CUSTOM aren't `CompileExecutable`s (no captured stdout to parse), so they
+still get a timing/pass-fail entry but never a limits report - expected, not a bug.
+
 ## HLFIX auto-skip
 
 If your input file is already a `.map` (TrenchBroom saves/exports directly to `.map`, no `.rmf`
@@ -76,6 +98,16 @@ already `DynamicResource` for exactly this reason).
 **Unverified**: this relies on MahApps shipping `dark.red.xaml` alongside the `light.red.xaml`
 this project already uses (very standard convention, but I can't build here to confirm), and I
 haven't been able to actually run the live swap to watch it repaint.
+
+## Recent fixes
+
+- **PACK's zip had a path bug**: the bsp went into the zip at `maps/mapname.bsp` but the `.res`
+  was going to the zip root (`mapname.res`) instead of `maps/mapname.res` - so extracting the
+  zip put the `.res` in the wrong folder relative to the bsp, which breaks server-side resource
+  downloading entirely. Fixed - both now sit under `maps/` inside the zip, matching where they
+  land on disk outside the zip too (the mod's actual `maps` folder, not the source folder).
+- **`$vmfFile$` renamed to `$rmfFile$`** (HLFIX's only consumer) - a leftover name from the
+  Source Engine `.vmf` days that never made sense for a `.rmf`-based pipeline.
 
 ## Resource packaging (RESGEN / PACK)
 

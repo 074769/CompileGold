@@ -71,7 +71,7 @@ namespace CompilePalX.Compilers
             using (var archive = ZipFile.Open(zipPath, ZipArchiveMode.Create))
             {
                 archive.CreateEntryFromFile(result.BspPath, $"maps/{result.MapName}.bsp");
-                archive.CreateEntryFromFile(resPath, $"{result.MapName}.res");
+                archive.CreateEntryFromFile(resPath, $"maps/{result.MapName}.res");
 
                 if (result.DetailTxtPath != null)
                     archive.CreateEntryFromFile(result.DetailTxtPath, Path.GetFileName(result.DetailTxtPath));

@@ -1084,6 +1084,13 @@ namespace CompilePalX
             App.ApplyTheme(dark);
         }
 
+        private void TelemetryButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            TelemetryPanel.Visibility = TelemetryPanel.Visibility == Visibility.Visible
+                ? Visibility.Collapsed
+                : Visibility.Visible;
+        }
+
         private void ShowUnsupportedModal()
         {
             ShowModal("Unsupported Platform", $"{RuntimeInformation.OSDescription} is no longer officially supported\nSome features may not work as exepcted\n\nKnown Issues:\nUnable to automatically check for updates");

@@ -13,9 +13,13 @@ namespace CompilePalX.Compilers
 {
     class CompileExecutable(string metadata, string? parameterFolder = null) : CompileProcess(metadata, parameterFolder)
     {
+        /// <summary>Full captured stdout for this run, used to parse the BSP limits report for the telemetry panel.</summary>
+        public StringBuilder RawOutput { get; } = new();
+
         public override void Run(CompileContext c, CancellationToken cancellationToken)
         {
             CompileErrors = [];
+            RawOutput.Clear();
 
             if (!CanRun(c)) return;
 
@@ -111,6 +115,7 @@ namespace CompilePalX.Compilers
                     {
                         string text = new (buffer, 0, read.Result);
                         CompilePalLogger.LogProgressive(text);
+                        RawOutput.Append(text);
 
                         read = null; // task completed so we need to create a new one
                         continue;

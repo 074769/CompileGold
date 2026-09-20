@@ -21,7 +21,7 @@ namespace CompilePalX
 
         public static string SubstituteValues(string text, string mapFile = "", bool quote = true)
         {
-            text = text.Replace("$vmfFile$", FormatValue(mapFile, quote));
+            text = text.Replace("$rmfFile$", FormatValue(mapFile, quote));
             text = text.Replace("$map$", FormatValue(Path.GetFileNameWithoutExtension(mapFile), quote));
             text = text.Replace("$bsp$", FormatValue(Path.ChangeExtension(mapFile, "bsp"), quote));
 
