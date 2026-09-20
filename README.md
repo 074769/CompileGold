@@ -1,8 +1,5 @@
 <p align="center">
-	<img
-		alt="CompileGold"
-		src="https://imgur.com/a/kXHjOGj"
-		width="400"
+![image](https://imgur.com/a/kXHjOGj)
 	/>
 </p>
 
