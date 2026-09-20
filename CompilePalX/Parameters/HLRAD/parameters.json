@@ -1,8 +1,16 @@
 [
   {
+    "Name": "Fast",
+    "Parameter": " -fast",
+    "Description": "Fast rad.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Not for final compiles."
+  },
+  {
     "Name": "Extra",
     "Parameter": " -extra",
-    "Description": "Enables supersampling for higher quality, smoother lighting edges.",
+    "Description": "Improve lighting quality by doing 9 point oversampling.",
     "Value": null,
     "CanHaveValue": false,
     "Warning": "Increases compile time."
@@ -10,31 +18,7 @@
   {
     "Name": "Bounce",
     "Parameter": " -bounce",
-    "Description": "Maximum number of radiosity light bounces (default 8).",
-    "Value": null,
-    "CanHaveValue": true,
-    "Warning": ""
-  },
-  {
-    "Name": "Chop",
-    "Parameter": " -chop",
-    "Description": "Radiosity patch size for normal (non-texlight) faces. Lower values increase quality at the cost of speed/memory.",
-    "Value": null,
-    "CanHaveValue": true,
-    "Warning": ""
-  },
-  {
-    "Name": "Texchop",
-    "Parameter": " -texchop",
-    "Description": "Radiosity patch size for texlight-emitting faces.",
-    "Value": null,
-    "CanHaveValue": true,
-    "Warning": ""
-  },
-  {
-    "Name": "Smooth",
-    "Parameter": " -smooth",
-    "Description": "Smoothing threshold angle (degrees) for shared normals between adjacent faces.",
+    "Description": "Set the number of radiosity light bounces.",
     "Value": null,
     "CanHaveValue": true,
     "Warning": ""
@@ -42,55 +26,31 @@
   {
     "Name": "Ambient",
     "Parameter": " -ambient",
-    "Description": "Minimum ambient world light applied to every face, as R G B (0.0-1.0 each).",
+    "Description": "Set ambient world light, as R G B (0.0 to 1.0 each).",
     "Value": null,
     "CanHaveValue": true,
     "Warning": "Pass as three space-separated values, e.g. 0.1 0.1 0.1"
   },
   {
-    "Name": "Blur",
-    "Parameter": " -blur",
-    "Description": "Blurs the lightmap to soften GoldSrc's blocky shadow edges (default 1.5). Use 1.0 for the classic look.",
-    "Value": null,
+    "Name": "Vismatrix",
+    "Parameter": " -vismatrix",
+    "Description": "Set the vismatrix method: normal, sparse, or off.",
+    "Value": "sparse",
     "CanHaveValue": true,
-    "Warning": ""
-  },
-  {
-    "Name": "No Opaque Entities",
-    "Parameter": " -nopaque",
-    "Description": "Don't treat entities with the zhlt_lightflags/opaque settings as opaque to lighting.",
-    "Value": null,
-    "CanHaveValue": false,
     "Warning": ""
   },
   {
     "Name": "Pre-25th Anniversary",
     "Parameter": " -pre25",
-    "Description": "SDHLT: overrides the light-clipping threshold limiter to 188, for compiling against the legacy pre-25th Anniversary Update engine.",
+    "Description": "Optimize the compile for the pre-Half-Life 25th Anniversary Update engine.",
     "Value": null,
     "CanHaveValue": false,
-    "Warning": "Extension flag - only present in some HLT builds (e.g. SDHLT)."
+    "Warning": "SDHLT-specific parameter."
   },
   {
-    "Name": "Blur Clamp",
-    "Parameter": " -blurclamp",
-    "Description": "Clamps the -blur smoothing value to avoid excessive softening of lightmap edges.",
-    "Value": null,
-    "CanHaveValue": false,
-    "Warning": ""
-  },
-  {
-    "Name": "No Studio Shadow",
-    "Parameter": " -nostudioshadow",
-    "Description": "SDHLT: ignores the zhlt_studioshadow keyvalue on studiomodels, disabling their custom shadow casting.",
-    "Value": null,
-    "CanHaveValue": false,
-    "Warning": "Extension flag - only present in some HLT builds (e.g. SDHLT)."
-  },
-  {
-    "Name": "Max Light",
-    "Parameter": " -maxlight",
-    "Description": "Caps the maximum light level, preventing fully overbright surfaces.",
+    "Name": "Limiter",
+    "Parameter": " -limiter",
+    "Description": "Set the light clipping threshold (-1 = none).",
     "Value": null,
     "CanHaveValue": true,
     "Warning": ""
@@ -105,17 +65,460 @@
     "IsDebug": true
   },
   {
-    "Name": "Sparse",
-    "Parameter": " -sparse",
-    "Description": "Reduces memory use of the sparse light-patch matrix at some cost to speed.",
+    "Name": "No Spread",
+    "Parameter": " -nospread",
+    "Description": "Disable sunlight spread angles for this compile.",
     "Value": null,
     "CanHaveValue": false,
     "Warning": ""
   },
   {
-    "Name": "Chart",
-    "Parameter": " -chart",
-    "Description": "Prints BSP statistics before writing the output.",
+    "Name": "No Opaque Entities",
+    "Parameter": " -nopaque",
+    "Description": "Disable the opaque zhlt_lightflags for this compile.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "No Studio Shadow",
+    "Parameter": " -nostudioshadow",
+    "Description": "Disable opaque studiomodels; ignores zhlt_studioshadow for this compile.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "SDHLT-specific parameter."
+  },
+  {
+    "Name": "Smooth",
+    "Parameter": " -smooth",
+    "Description": "Set the smoothing threshold for blending, in degrees.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Smooth2",
+    "Parameter": " -smooth2",
+    "Description": "Set the smoothing threshold between different textures.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Chop",
+    "Parameter": " -chop",
+    "Description": "Set the radiosity patch size for normal textures.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Texchop",
+    "Parameter": " -texchop",
+    "Description": "Set the radiosity patch size for texture-light faces.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "No Tex Scale",
+    "Parameter": " -notexscale",
+    "Description": "Do not scale radiosity patches with texture scale.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "Coring",
+    "Parameter": " -coring",
+    "Description": "Set the lighting threshold before blackness.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Direct Light",
+    "Parameter": " -dlight",
+    "Description": "Set the direct lighting threshold.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "No Lerp",
+    "Parameter": " -nolerp",
+    "Description": "Disable radiosity interpolation, using nearest point instead.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Fade",
+    "Parameter": " -fade",
+    "Description": "Set the global fade. Larger values make lights shorter.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Texlight Gap",
+    "Parameter": " -texlightgap",
+    "Description": "Set the global gap distance for texlights.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Scale",
+    "Parameter": " -scale",
+    "Description": "Set the global light scaling value.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Gamma",
+    "Parameter": " -gamma",
+    "Description": "Set the global gamma value.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Sky",
+    "Parameter": " -sky",
+    "Description": "Set the ambient sunlight contribution in the shade outside.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Lights File",
+    "Parameter": " -lights",
+    "Description": "Manually specify a lights.rad file to use.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "No Sky Fix",
+    "Parameter": " -noskyfix",
+    "Description": "Disable light_environment being global.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "Incremental",
+    "Parameter": " -incremental",
+    "Description": "Use or create an incremental transfer list file.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "Colour Gamma",
+    "Parameter": " -colourgamma",
+    "Description": "Sets different gamma values for R, G, B.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "Pass as three space-separated values, e.g. 1.0 1.0 1.0"
+  },
+  {
+    "Name": "Colour Scale",
+    "Parameter": " -colourscale",
+    "Description": "Sets different lightscale values for R, G, B.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "Pass as three space-separated values, e.g. 1.0 1.0 1.0"
+  },
+  {
+    "Name": "Colour Jitter",
+    "Parameter": " -colourjitter",
+    "Description": "Adds noise, independent per colour channel, for dithering.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "Pass as three space-separated values."
+  },
+  {
+    "Name": "Jitter",
+    "Parameter": " -jitter",
+    "Description": "Adds monochromatic noise, for dithering.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "Pass as three space-separated values."
+  },
+  {
+    "Name": "Custom Shadow With Bounce",
+    "Parameter": " -customshadowwithbounce",
+    "Description": "Enables custom shadows with bounce light.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "RGB Transfers",
+    "Parameter": " -rgbtransfers",
+    "Description": "Enables RGB transfers (for custom shadows).",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "Min Light",
+    "Parameter": " -minlight",
+    "Description": "Minimum final light level (integer from 0 to 255).",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Compress",
+    "Parameter": " -compress",
+    "Description": "Compress transfer (0=32bit, 1=16bit, 2=8bit).",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "RGB Compress",
+    "Parameter": " -rgbcompress",
+    "Description": "Compress RGB transfer (0=96bit, 1=48bit, 2=32bit, 3=24bit).",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Soft Sky",
+    "Parameter": " -softsky",
+    "Description": "Smooth skylight (0=off, 1=on).",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Depth",
+    "Parameter": " -depth",
+    "Description": "Thickness of translucent objects.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Block Opaque",
+    "Parameter": " -blockopaque",
+    "Description": "Remove the black areas around opaque entities (0=off, 1=on).",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "No Textures",
+    "Parameter": " -notextures",
+    "Description": "Don't load textures.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Tex Reflect Gamma",
+    "Parameter": " -texreflectgamma",
+    "Description": "Gamma that relates reflectivity to texture color bits.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Tex Reflect Scale",
+    "Parameter": " -texreflectscale",
+    "Description": "Reflectivity for a 255-white texture.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Blur",
+    "Parameter": " -blur",
+    "Description": "Enlarge the lightmap sample to blur the lightmap. Softens GoldSrc's blocky shadow edges.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Blur Clamp",
+    "Parameter": " -blurclamp",
+    "Description": "Limit blurred light bleeding into shadow edges (0 = off, 0.0 to 1.0).",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "No Bleed Fix",
+    "Parameter": " -nobleedfix",
+    "Description": "Don't fix the wall-bleeding problem for large blur values.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "No Emitter Range",
+    "Parameter": " -noemitterrange",
+    "Description": "Don't fix pointy texlights.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "PCF",
+    "Parameter": " -pcf",
+    "Description": "PCF taps per axis for softer shadow edges (1 = off, 1 to 8). Cost scales with the square of this value.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Ambient Occlusion",
+    "Parameter": " -ao",
+    "Description": "Enable ambient occlusion (cosine-weighted hemisphere).",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "SDHLT-specific parameter."
+  },
+  {
+    "Name": "AO Scale",
+    "Parameter": " -aoscale",
+    "Description": "Set the ambient occlusion ray length. Larger values give thicker, wider bands.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "SDHLT-specific parameter."
+  },
+  {
+    "Name": "AO Gain",
+    "Parameter": " -aogain",
+    "Description": "Set the ambient occlusion falloff exponent. Larger values give sharper corners; smaller values give softer spread.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "SDHLT-specific parameter."
+  },
+  {
+    "Name": "AO Level",
+    "Parameter": " -aolevel",
+    "Description": "Set the ambient occlusion hemisphere sampling level (1 to 8). Lower values compile faster at the same quality.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "SDHLT-specific parameter."
+  },
+  {
+    "Name": "AO Min Weight",
+    "Parameter": " -aominweight",
+    "Description": "Skip ambient occlusion rays below this weight fraction (0.0 to 0.1).",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "SDHLT-specific parameter."
+  },
+  {
+    "Name": "AO Studio Mode",
+    "Parameter": " -aostudiomode",
+    "Description": "Global zhlt_shadowmode override for ambient occlusion only: fast, normal, slow, or inherit.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "SDHLT-specific parameter."
+  },
+  {
+    "Name": "AO Opacity",
+    "Parameter": " -aoopacity",
+    "Description": "Set the ambient occlusion opacity (0.0 to 1.0).",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "SDHLT-specific parameter."
+  },
+  {
+    "Name": "AO Color",
+    "Parameter": " -aocolor",
+    "Description": "Set the ambient occlusion tint color, as R G B (0 to 255).",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "SDHLT-specific parameter. Pass as three space-separated values."
+  },
+  {
+    "Name": "AO Stats",
+    "Parameter": " -aostats",
+    "Description": "Print ambient occlusion ray/stage statistics after BuildFaceLights.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "SDHLT-specific parameter.",
+    "IsDebug": true
+  },
+  {
+    "Name": "Waddir",
+    "Parameter": " -waddir",
+    "Description": "Search this folder for WAD files.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Dump",
+    "Parameter": " -dump",
+    "Description": "Dumps light patches to a file for HLRAD debugging.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Draw Patch",
+    "Parameter": " -drawpatch",
+    "Description": "Export light patch positions to file 'mapname_patch.pts'.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Draw Sample",
+    "Parameter": " -drawsample",
+    "Description": "Export light sample positions in an area to file 'mapname_sample.pts'.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "Pass as: x y z r",
+    "IsDebug": true
+  },
+  {
+    "Name": "Draw Edge",
+    "Parameter": " -drawedge",
+    "Description": "Export smooth edge positions to file 'mapname_edge.pts'.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Draw Lerp",
+    "Parameter": " -drawlerp",
+    "Description": "Show bounce light triangulation status.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Draw Nudge",
+    "Parameter": " -drawnudge",
+    "Description": "Show nudged samples.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Draw Overload",
+    "Parameter": " -drawoverload",
+    "Description": "Highlight fullbright spots.",
     "Value": null,
     "CanHaveValue": false,
     "Warning": "",
@@ -124,10 +527,27 @@
   {
     "Name": "Texdata",
     "Parameter": " -texdata",
-    "Description": "Increases the texture memory pool size, in KB.",
+    "Description": "Alter the maximum texture memory limit, in KB.",
     "Value": null,
     "CanHaveValue": true,
     "Warning": ""
+  },
+  {
+    "Name": "Lightdata",
+    "Parameter": " -lightdata",
+    "Description": "Alter the maximum lighting memory limit, in KB.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Chart",
+    "Parameter": " -chart",
+    "Description": "Display BSP statistics.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
   },
   {
     "Name": "Low Priority",
@@ -146,11 +566,64 @@
     "Warning": "Can freeze your computer while compiling."
   },
   {
+    "Name": "No Log",
+    "Parameter": " -nolog",
+    "Description": "Don't generate the compile logfiles.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
     "Name": "Threads",
     "Parameter": " -threads",
-    "Description": "Manually overrides the number of CPU threads used.",
+    "Description": "Manually specify the number of CPU threads to run.",
     "Value": null,
     "CanHaveValue": true,
     "Warning": ""
+  },
+  {
+    "Name": "Estimate",
+    "Parameter": " -estimate",
+    "Description": "Display estimated time remaining during compile.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "Verbose",
+    "Parameter": " -verbose",
+    "Description": "Compile with verbose messages.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "No Info",
+    "Parameter": " -noinfo",
+    "Description": "Do not show tool configuration information.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Developer",
+    "Parameter": " -dev",
+    "Description": "Compile with developer messages.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Console",
+    "Parameter": " -console",
+    "Description": "Set to 0 to turn off the tool's pop-up console window (default is 1).",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "",
+    "IsDebug": true
   }
 ]

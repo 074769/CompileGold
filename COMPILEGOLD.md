@@ -33,9 +33,31 @@ earlier version of this fork had that concatenation, which broke the quoting whe
 outside the quoted section, producing exactly the `"...\tools"\hlfix.exe` mangled path some users
 hit. Fixed now.
 
-Two flags in HLCSG (`-worldextent`) and HLVIS (`-nofixprt`) are extensions some HLT builds (like
-SDHLT) support but vanilla ZHLT doesn't - they're marked in the UI so you know to skip them if
-your tools don't recognise them.
+Flags marked "SDHLT-specific" in the UI (`-worldextent`, `-nowadautodetect` in HLCSG;
+`-nofixprt` in HLVIS; `-pre25`, `-nostudioshadow`, and the whole `-ao*` ambient occlusion family
+in HLRAD) are SDHLT additions that vanilla ZHLT doesn't have - skip them if your tools don't
+recognise them.
+
+All four tools' option lists (HLCSG: 33, HLBSP: 26, HLVIS: 16, HLRAD: 76) were rebuilt from
+each tool's own `-?` help output rather than guessed, so they should match your actual binaries'
+supported flags exactly.
+
+## Dark mode
+
+The "always white" bug (everything except the compile log staying white regardless of the
+toggle) came from `CompilePalTheme.xaml` hardcoding `ThemeForeground`, `ThemeBackground`
+(literally `White`), and `IdealForeground` - independent of whichever base MahApps theme
+(light/dark) was active, so those fixed colors always won. Fixed by splitting that file into
+`CompilePalTheme.Light.xaml` / `CompilePalTheme.Dark.xaml`, neither of which touches those three
+tokens anymore (they're left to the active base theme), and giving the dark variant its own
+dark-appropriate grid-row and disabled-checkbox colors.
+
+Because most of this app's brushes are `StaticResource` with `Freeze="True"` (baked in at load
+time, not live-updating), toggling dark mode saves the preference and restarts the app rather
+than trying to repaint everything live - more reliable than a partial live swap.
+
+**Unverified**: this relies on MahApps shipping `dark.red.xaml` alongside the `light.red.xaml`
+this project already uses (very standard convention, but I can't build here to confirm).
 
 ## What's different from CompilePal
 

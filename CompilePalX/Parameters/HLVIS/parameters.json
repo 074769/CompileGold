@@ -1,13 +1,5 @@
 [
   {
-    "Name": "Fast",
-    "Parameter": " -fast",
-    "Description": "Fast vis. Good for quick playtests, but r_speeds and visibility quality will be poor.",
-    "Value": null,
-    "CanHaveValue": false,
-    "Warning": "Not for final compiles."
-  },
-  {
     "Name": "Full",
     "Parameter": " -full",
     "Description": "Full, normal vis pass.",
@@ -16,29 +8,53 @@
     "Warning": ""
   },
   {
-    "Name": "No Fix Portal File",
-    "Parameter": " -nofixprt",
-    "Description": "Disables the .prt portal-file optimisation used for direct import into the J.A.C.K. map editor.",
+    "Name": "Fast",
+    "Parameter": " -fast",
+    "Description": "Fast vis. Good for quick playtests, but r_speeds and visibility quality will be poor.",
     "Value": null,
     "CanHaveValue": false,
-    "Warning": "Extension flag - only present in some HLT builds (e.g. SDHLT). Remove if your hlvis.exe doesn't recognise it."
+    "Warning": "Not for final compiles."
   },
   {
-    "Name": "Chart",
-    "Parameter": " -chart",
-    "Description": "Prints BSP statistics before writing the output.",
+    "Name": "No Fix Portal File",
+    "Parameter": " -nofixprt",
+    "Description": "Disables optimization of the portal file for import into the J.A.C.K. map editor.",
     "Value": null,
     "CanHaveValue": false,
-    "Warning": "",
-    "IsDebug": true
+    "Warning": "SDHLT-specific parameter."
+  },
+  {
+    "Name": "Max Distance",
+    "Parameter": " -maxdistance",
+    "Description": "Alter the maximum distance used for visibility calculations.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
   },
   {
     "Name": "Texdata",
     "Parameter": " -texdata",
-    "Description": "Increases the texture memory pool size, in KB.",
+    "Description": "Alter the maximum texture memory limit, in KB.",
     "Value": null,
     "CanHaveValue": true,
     "Warning": ""
+  },
+  {
+    "Name": "Lightdata",
+    "Parameter": " -lightdata",
+    "Description": "Alter the maximum lighting memory limit, in KB.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Chart",
+    "Parameter": " -chart",
+    "Description": "Display BSP statistics.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
   },
   {
     "Name": "Low Priority",
@@ -57,11 +73,64 @@
     "Warning": "Can freeze your computer while compiling."
   },
   {
+    "Name": "No Log",
+    "Parameter": " -nolog",
+    "Description": "Don't generate the compile logfiles.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
     "Name": "Threads",
     "Parameter": " -threads",
-    "Description": "Manually overrides the number of CPU threads used.",
+    "Description": "Manually specify the number of CPU threads to run.",
     "Value": null,
     "CanHaveValue": true,
     "Warning": ""
+  },
+  {
+    "Name": "Estimate",
+    "Parameter": " -estimate",
+    "Description": "Display estimated time remaining during compile.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "Verbose",
+    "Parameter": " -verbose",
+    "Description": "Compile with verbose messages.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "No Info",
+    "Parameter": " -noinfo",
+    "Description": "Do not show tool configuration information.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Developer",
+    "Parameter": " -dev",
+    "Description": "Compile with developer messages.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Console",
+    "Parameter": " -console",
+    "Description": "Set to 0 to turn off the tool's pop-up console window (default is 1).",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "",
+    "IsDebug": true
   }
 ]

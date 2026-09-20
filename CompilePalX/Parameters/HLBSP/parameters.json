@@ -2,41 +2,93 @@
   {
     "Name": "Leak Only",
     "Parameter": " -leakonly",
-    "Description": "Only runs enough of HLBSP to check for leaks, then stops. Useful for quickly testing map sealing.",
+    "Description": "Run BSP only enough to check for leaks.",
     "Value": null,
     "CanHaveValue": false,
     "Warning": "Does not produce a usable BSP.",
     "IsDebug": true
   },
   {
-    "Name": "No Fill",
-    "Parameter": " -nofill",
-    "Description": "Skips outside filling. Faster, but leaks will not be detected or masked.",
+    "Name": "Subdivide",
+    "Parameter": " -subdivide",
+    "Description": "Sets the face subdivide size.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Max Node Size",
+    "Parameter": " -maxnodesize",
+    "Description": "Sets the maximum portal node size.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "No T-Junc",
+    "Parameter": " -notjunc",
+    "Description": "Don't break edges on t-junctions.",
     "Value": null,
     "CanHaveValue": false,
-    "Warning": "Not for final compiles.",
+    "Warning": "Not for final runs.",
+    "IsDebug": true
+  },
+  {
+    "Name": "No Brink",
+    "Parameter": " -nobrink",
+    "Description": "Don't smooth brinks.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Not for final runs.",
     "IsDebug": true
   },
   {
     "Name": "No Clip",
     "Parameter": " -noclip",
-    "Description": "Skip clipnode generation. Must match the -noclip setting used in HLCSG.",
+    "Description": "Don't process the clipping hull.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Not for final runs. Must match the -noclip setting used in HLCSG."
+  },
+  {
+    "Name": "No Fill",
+    "Parameter": " -nofill",
+    "Description": "Don't fill outside (masks leaks).",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "Not for final runs.",
+    "IsDebug": true
+  },
+  {
+    "Name": "No Inside Fill",
+    "Parameter": " -noinsidefill",
+    "Description": "Don't fill empty spaces.",
     "Value": null,
     "CanHaveValue": false,
     "Warning": ""
   },
   {
-    "Name": "No Hull 1",
-    "Parameter": " -nohull1",
-    "Description": "Don't generate clip hull 1 (standard player-sized collision hull).",
+    "Name": "No Opt",
+    "Parameter": " -noopt",
+    "Description": "Don't optimize planes on BSP write.",
     "Value": null,
     "CanHaveValue": false,
-    "Warning": "Only skip this if you know the map doesn't need standard player collision."
+    "Warning": "Not for final runs.",
+    "IsDebug": true
+  },
+  {
+    "Name": "No Clipnode Merge",
+    "Parameter": " -noclipnodemerge",
+    "Description": "Don't optimize clipnodes.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
   },
   {
     "Name": "No Hull 2",
     "Parameter": " -nohull2",
-    "Description": "Don't generate clip hull 2 (large/ducking collision hull).",
+    "Description": "Don't generate hull 2 (the clipping hull for large monsters and pushables).",
     "Value": null,
     "CanHaveValue": false,
     "Warning": "Only skip this if you know the map doesn't need this collision hull."
@@ -44,49 +96,41 @@
   {
     "Name": "No Hull 3",
     "Parameter": " -nohull3",
-    "Description": "Don't generate clip hull 3 (point-sized collision hull, used for hitscan/trace checks).",
+    "Description": "Don't generate hull 3 (the clipping hull for crouching and small pushables).",
     "Value": null,
     "CanHaveValue": false,
     "Warning": "Only skip this if you know the map doesn't need this collision hull."
   },
   {
-    "Name": "No Opt",
-    "Parameter": " -noopt",
-    "Description": "Disables automatic removal of unused planes from the output BSP.",
-    "Value": null,
-    "CanHaveValue": false,
-    "Warning": ""
-  },
-  {
-    "Name": "No T-Junc",
-    "Parameter": " -notjunc",
-    "Description": "Don't fix up t-junctions.",
-    "Value": null,
-    "CanHaveValue": false,
-    "Warning": "Debugging option, not for normal use.",
-    "IsDebug": true
-  },
-  {
     "Name": "No Null Texture Strip",
     "Parameter": " -nonulltex",
-    "Description": "Disables stripping of NULL-textured faces.",
+    "Description": "Don't strip NULL faces.",
     "Value": null,
     "CanHaveValue": false,
     "Warning": "",
     "IsDebug": true
   },
   {
-    "Name": "Max Node Size",
-    "Parameter": " -maxnodesize",
-    "Description": "Maximum portal node size. Smaller values BSP the world into more, smaller pieces.",
+    "Name": "View Portal",
+    "Parameter": " -viewportal",
+    "Description": "Show portal boundaries in a 'mapname_portal.pts' file.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Texdata",
+    "Parameter": " -texdata",
+    "Description": "Alter the maximum texture memory limit, in KB.",
     "Value": null,
     "CanHaveValue": true,
     "Warning": ""
   },
   {
-    "Name": "Subdivide",
-    "Parameter": " -subdivide",
-    "Description": "Face subdivide size in units (default 240, min 64, max 512).",
+    "Name": "Lightdata",
+    "Parameter": " -lightdata",
+    "Description": "Alter the maximum lighting memory limit, in KB.",
     "Value": null,
     "CanHaveValue": true,
     "Warning": ""
@@ -94,7 +138,7 @@
   {
     "Name": "Chart",
     "Parameter": " -chart",
-    "Description": "Prints BSP statistics before writing the output.",
+    "Description": "Display BSP statistics.",
     "Value": null,
     "CanHaveValue": false,
     "Warning": "",
@@ -117,11 +161,64 @@
     "Warning": "Can freeze your computer while compiling."
   },
   {
+    "Name": "No Log",
+    "Parameter": " -nolog",
+    "Description": "Don't generate the compile logfiles.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
     "Name": "Threads",
     "Parameter": " -threads",
-    "Description": "Manually overrides the number of CPU threads used.",
+    "Description": "Manually specify the number of CPU threads to run.",
     "Value": null,
     "CanHaveValue": true,
     "Warning": ""
+  },
+  {
+    "Name": "Estimate",
+    "Parameter": " -estimate",
+    "Description": "Display estimated time remaining during compile.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "Verbose",
+    "Parameter": " -verbose",
+    "Description": "Compile with verbose messages.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "No Info",
+    "Parameter": " -noinfo",
+    "Description": "Do not show tool configuration information.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Developer",
+    "Parameter": " -dev",
+    "Description": "Compile with developer messages.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Console",
+    "Parameter": " -console",
+    "Description": "Set to 0 to turn off the tool's pop-up console window (default is 1).",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "",
+    "IsDebug": true
   }
 ]

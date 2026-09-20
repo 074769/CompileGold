@@ -2,7 +2,7 @@
   {
     "Name": "Only Entities",
     "Parameter": " -onlyents",
-    "Description": "Only update entities, don't rebuild brush geometry. Conserves existing lighting/vis data.",
+    "Description": "Do an entity update from .map to .bsp, without rebuilding geometry.",
     "Value": null,
     "CanHaveValue": false,
     "Warning": "Requires a previously compiled .bsp of the same map."
@@ -10,7 +10,7 @@
   {
     "Name": "No WAD Textures",
     "Parameter": " -nowadtextures",
-    "Description": "Embeds all textures directly into the BSP instead of relying on external WAD files at runtime.",
+    "Description": "Include all used textures into the BSP instead of relying on external WAD files at runtime.",
     "Value": null,
     "CanHaveValue": false,
     "Warning": "Increases BSP file size."
@@ -18,32 +18,97 @@
   {
     "Name": "WAD Include",
     "Parameter": " -wadinclude",
-    "Description": "Forces textures from the named WAD to always be embedded into the BSP, even if -nowadtextures isn't set.",
+    "Description": "Include a specific WAD or directory into the BSP.",
     "Value": null,
     "CanHaveValue": true,
-    "Warning": "Pass the WAD filename, e.g. sdhlt.wad"
+    "Warning": ""
   },
   {
     "Name": "No WAD Autodetect",
     "Parameter": " -nowadautodetect",
-    "Description": "SDHLT: disables automatic WAD detection (SDHLT enables wad autodetect by default regardless of other settings).",
+    "Description": "Disable auto-detection of WAD files (SDHLT enables wad autodetect by default regardless of other settings).",
     "Value": null,
     "CanHaveValue": false,
-    "Warning": "Extension flag - only present in some HLT builds (e.g. SDHLT)."
+    "Warning": "SDHLT-specific parameter."
   },
   {
     "Name": "No Clip",
     "Parameter": " -noclip",
-    "Description": "Don't generate clipnodes (player collision hulls).",
+    "Description": "Don't create the clipping hull.",
     "Value": null,
     "CanHaveValue": false,
     "Warning": "HLBSP must also be run with -noclip if used here."
   },
   {
+    "Name": "Clip Economy",
+    "Parameter": " -clipeconomy",
+    "Description": "Turn clipnode economy mode on.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
     "Name": "Clip Type",
     "Parameter": " -cliptype",
-    "Description": "Clip hull generation method: legacy, normalized, simple, precise, or smallest.",
+    "Description": "Clip hull generation method: legacy (default), normalized, simple, precise, or smallest.",
     "Value": "precise",
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Null File",
+    "Parameter": " -nullfile",
+    "Description": "Specify a list of entities to retexture with NULL.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "No Sky Clip",
+    "Parameter": " -noskyclip",
+    "Description": "Disable automatic clipping of SKY brushes.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "Tiny",
+    "Parameter": " -tiny",
+    "Description": "Minimum brush face surface area before it is discarded.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Brush Union Threshold",
+    "Parameter": " -brushunion",
+    "Description": "Threshold to warn about overlapping brushes.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "Slows down HLCSG considerably; leave unset for normal compiles.",
+    "IsDebug": true
+  },
+  {
+    "Name": "Hull File",
+    "Parameter": " -hullfile",
+    "Description": "Reads in custom collision hull dimensions from a file.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "WAD Config File",
+    "Parameter": " -wadcfgfile",
+    "Description": "Specify a WAD configuration file.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "WAD Config",
+    "Parameter": " -wadconfig",
+    "Description": "Use the old wad configuration approach - selects a named group from wad.cfg.",
+    "Value": null,
     "CanHaveValue": true,
     "Warning": ""
   },
@@ -53,29 +118,72 @@
     "Description": "Extends the maximum map geometry bounds beyond the default +/-32768 units.",
     "Value": null,
     "CanHaveValue": true,
-    "Warning": "Extension flag - only present in some HLT builds (e.g. SDHLT). Remove if your hlcsg.exe doesn't recognise it."
+    "Warning": "SDHLT-specific parameter."
   },
   {
-    "Name": "Brush Union Threshold",
-    "Parameter": " -brushunion",
-    "Description": "Warns about overlapping brushes above this percentage of overlap (0-100). Mapper debugging aid.",
+    "Name": "Scale",
+    "Parameter": " -scale",
+    "Description": "Scale the world.",
     "Value": null,
     "CanHaveValue": true,
-    "Warning": "Slows down HLCSG considerably; leave unset for normal compiles.",
+    "Warning": "Use at your own risk."
+  },
+  {
+    "Name": "No Null Texture Strip",
+    "Parameter": " -nonulltex",
+    "Description": "Turns off NULL texture stripping.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "No Nullify Trigger",
+    "Parameter": " -nonullifytrigger",
+    "Description": "Don't remove the 'aaatrigger' texture.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "No Light Opt",
+    "Parameter": " -nolightopt",
+    "Description": "Don't optimize engine light entities.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "No Text Convert",
+    "Parameter": " -notextconvert",
+    "Description": "Don't convert game_text message from Windows ANSI to UTF8 format.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
     "IsDebug": true
   },
   {
     "Name": "Texdata",
     "Parameter": " -texdata",
-    "Description": "Increases the texture memory pool size, in KB, for maps with a large number of unique textures.",
+    "Description": "Alter the maximum texture memory limit, in KB.",
     "Value": "4096",
+    "CanHaveValue": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Lightdata",
+    "Parameter": " -lightdata",
+    "Description": "Alter the maximum lighting memory limit, in KB.",
+    "Value": null,
     "CanHaveValue": true,
     "Warning": ""
   },
   {
     "Name": "Chart",
     "Parameter": " -chart",
-    "Description": "Prints BSP statistics before writing the output.",
+    "Description": "Display BSP statistics.",
     "Value": null,
     "CanHaveValue": false,
     "Warning": "",
@@ -98,11 +206,73 @@
     "Warning": "Can freeze your computer while compiling."
   },
   {
+    "Name": "No Log",
+    "Parameter": " -nolog",
+    "Description": "Don't generate the compile logfiles.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "No Reset Log",
+    "Parameter": " -noresetlog",
+    "Description": "Do not delete the log file from previous compiles.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
     "Name": "Threads",
     "Parameter": " -threads",
-    "Description": "Manually overrides the number of CPU threads used.",
+    "Description": "Manually specify the number of CPU threads to run.",
     "Value": null,
     "CanHaveValue": true,
     "Warning": ""
+  },
+  {
+    "Name": "Estimate",
+    "Parameter": " -estimate",
+    "Description": "Display estimated time remaining during compile.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "Verbose",
+    "Parameter": " -verbose",
+    "Description": "Compile with verbose messages.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "No Info",
+    "Parameter": " -noinfo",
+    "Description": "Do not show tool configuration information.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Developer",
+    "Parameter": " -dev",
+    "Description": "Compile with developer messages.",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "",
+    "IsDebug": true
+  },
+  {
+    "Name": "Console",
+    "Parameter": " -console",
+    "Description": "Set to 0 to turn off the tool's pop-up console window (default is 1).",
+    "Value": null,
+    "CanHaveValue": true,
+    "Warning": "",
+    "IsDebug": true
   }
 ]

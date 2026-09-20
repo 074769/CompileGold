@@ -23,26 +23,38 @@ namespace CompilePalX
 
         private const string LightThemeUri = "pack://application:,,,/MahApps.Metro;component/Styles/themes/light.red.xaml";
         private const string DarkThemeUri = "pack://application:,,,/MahApps.Metro;component/Styles/themes/dark.red.xaml";
+        private const string LightOverlayUri = "CompilePalTheme.Light.xaml";
+        private const string DarkOverlayUri = "CompilePalTheme.Dark.xaml";
 
         /// <summary>
-        /// Swaps the base MahApps Light/Dark theme dictionary. CompilePalTheme.xaml stays merged
-        /// in afterwards untouched, so the gold accent overrides still apply on top of either.
+        /// Swaps both the base MahApps Light/Dark theme dictionary and CompileGold's own
+        /// accent/grid-color overlay together, so app-specific colors (grid row shading,
+        /// disabled checkboxes) get dark-appropriate values too instead of just inheriting
+        /// whatever the base theme happens to leave unset.
         /// </summary>
         public static void ApplyTheme(bool dark)
         {
             IsDarkMode = dark;
 
             var mergedDicts = Application.Current.Resources.MergedDictionaries;
-            var existing = mergedDicts.FirstOrDefault(d => d.Source != null &&
+
+            var existingBase = mergedDicts.FirstOrDefault(d => d.Source != null &&
                 (d.Source.OriginalString.IndexOf("light.red.xaml", StringComparison.OrdinalIgnoreCase) >= 0 ||
                  d.Source.OriginalString.IndexOf("dark.red.xaml", StringComparison.OrdinalIgnoreCase) >= 0));
-
-            var newDict = new ResourceDictionary { Source = new Uri(dark ? DarkThemeUri : LightThemeUri) };
-
-            if (existing != null)
-                mergedDicts[mergedDicts.IndexOf(existing)] = newDict;
+            var newBase = new ResourceDictionary { Source = new Uri(dark ? DarkThemeUri : LightThemeUri) };
+            if (existingBase != null)
+                mergedDicts[mergedDicts.IndexOf(existingBase)] = newBase;
             else
-                mergedDicts.Insert(0, newDict);
+                mergedDicts.Insert(0, newBase);
+
+            var existingOverlay = mergedDicts.FirstOrDefault(d => d.Source != null &&
+                (d.Source.OriginalString.IndexOf("CompilePalTheme.Light.xaml", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                 d.Source.OriginalString.IndexOf("CompilePalTheme.Dark.xaml", StringComparison.OrdinalIgnoreCase) >= 0));
+            var newOverlay = new ResourceDictionary { Source = new Uri(dark ? DarkOverlayUri : LightOverlayUri, UriKind.Relative) };
+            if (existingOverlay != null)
+                mergedDicts[mergedDicts.IndexOf(existingOverlay)] = newOverlay;
+            else
+                mergedDicts.Add(newOverlay);
         }
 
 	    protected override void OnStartup(StartupEventArgs e)
