@@ -1,0 +1,12 @@
+{
+  "Name": "PACK",
+  "Path": "builtin",
+  "Order": 1.6,
+  "DoRun": false,
+  "ReadOutput": true,
+  "Description": "Scans the compiled .bsp for asset dependencies, writes a categorized .res file, and bundles everything (bsp, .res, detail.txt, and every resolved dependency) into a zip named after the bsp. Use RESGEN instead if you only want the .res.",
+  "Warning": "Heuristic-based - review the log for anything it couldn't resolve, and use the Extra File option to add paths it missed.",
+  "PresetDefault": false,
+  "SupportsBSP": true,
+  "WorkingDirectory": "$binFolder$"
+}

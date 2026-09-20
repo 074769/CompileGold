@@ -4,7 +4,7 @@
   "Order": 1.5,
   "DoRun": true,
   "ReadOutput": true,
-  "Description": "Scans the compiled .bsp for asset dependencies, writes a .res file, and zips it with the map and every dependency it could find (no packing into the bsp itself).",
+  "Description": "Scans the compiled .bsp for asset dependencies and writes a categorized .res file next to it in the maps folder. Use PACK instead if you also want a distributable zip.",
   "Warning": "Heuristic-based - review the log for anything it couldn't resolve, and use the Extra File option to add paths it missed.",
   "PresetDefault": false,
   "SupportsBSP": true,

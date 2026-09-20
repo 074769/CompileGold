@@ -6,6 +6,15 @@ SDHLT, etc. - anything shipping `hlcsg.exe`/`hlbsp.exe`/`hlvis.exe`/`hlrad.exe`/
 those standard names). It shares no identity, settings, telemetry, or update channel with the
 original CompilePal.
 
+## HLFIX auto-skip
+
+If your input file is already a `.map` (TrenchBroom saves/exports directly to `.map`, no `.rmf`
+involved), HLFIX now skips itself automatically instead of running and failing with "input file
+can't be the same as output file" (since the intended output would be identical to the input in
+that case) - HLCSG onward already reads from the same file either way, so there's nothing lost.
+You'll see a one-line "Skipping HLFIX" log note instead of hlfix's usage text dumped into the
+compile log.
+
 ## Compile pipeline
 
 CompileGold's input is a **`.rmf`** (Hammer 3.x/J.A.C.K. native format), not a `.vmf` or `.map`.
@@ -68,39 +77,53 @@ already `DynamicResource` for exactly this reason).
 this project already uses (very standard convention, but I can't build here to confirm), and I
 haven't been able to actually run the live swap to watch it repaint.
 
-## Resource packaging (RESGEN)
+## Resource packaging (RESGEN / PACK)
 
-GoldSrc doesn't have a pak lump the way Source's BSPs do, so CompileGold doesn't pack anything
-into the `.bsp`. Instead, a new **RESGEN** step runs right after HLRAD and:
+GoldSrc doesn't have a pak lump the way Source's BSPs do, so CompileGold never packs anything
+into the `.bsp`. Instead there are two separate steps, both sharing the same scan logic:
 
-1. Parses the freshly compiled `.bsp` directly (GoldSrc BSPVERSION 30 - header, lump directory,
+- **RESGEN** (on by default) - writes only the `.res` file
+- **PACK** (off by default, tick it to enable) - writes the `.res` **and** a distributable zip
+
+Both run right after HLRAD and:
+
+1. Parse the freshly compiled `.bsp` directly (GoldSrc BSPVERSION 30 - header, lump directory,
    entities text lump, miptex lump) rather than shelling out to another tool
-2. Scans every entity's key/value pairs for anything that looks like a resource path (`.mdl`,
+2. Scan every entity's key/value pairs for anything that looks like a resource path (`.mdl`,
    `.spr`, `.wav`, `.tga`, `.bmp`, `.wad`, `.txt`, etc. by extension - not an exhaustive
    FGD-driven per-entity-class table, since I don't have one I can fully verify), plus a special
    case for `skyname` (expands to the 6 `gfx/env/<name><suffix>.tga` files)
-3. Checks the miptex lump for any texture with no embedded pixel data; if it finds one, it reads
-   worldspawn's `wad` key and adds those WAD filenames as dependencies too (skipped entirely if
+3. Check the miptex lump for any texture with no embedded pixel data; if any is found, read
+   worldspawn's `wad` key and add those WAD filenames as dependencies too (skipped entirely if
    every texture is embedded, e.g. you compiled with `-nowadtextures`)
-4. Looks for `<mapname>_detail.txt` next to your `.rmf`/`.map` (SDHLT detail props) - includes it
-   in the zip if present, and scans its text with the same extension heuristic for further
-   dependencies
-5. Resolves every discovered path against your mod folder, then (unless disabled) against the
+4. Look for `<mapname>_detail.txt` next to your `.rmf`/`.map` (SDHLT detail props) - included in
+   PACK's zip if present, and scanned with the same extension heuristic for further dependencies
+5. Resolve every discovered path against your mod folder, then (unless disabled) against the
    base game folder next to it (e.g. `valve` next to `your_mod`) as a fallback
-6. Writes `<mapname>.res` (one relative path per line, `maps/<mapname>.bsp` listed first) and
-   `<mapname>_resources.zip` (the bsp, the .res, the detail.txt if present, and every resolved
-   dependency at its correct relative path) next to your source `.rmf`
+6. Skip `models/player.mdl` (and anything under `models/player/`) - it ships with every GoldSrc
+   install, never worth bundling
+7. Group everything into categories (Models, Sound, Sprites, GFX, WADs, Other) and write
+   `<mapname>.res` in the mod's **maps folder** (next to where the bsp ends up), each category
+   under a `// CategoryName` comment header, blank line between sections. **The bsp itself is
+   never listed in the .res** - it's downloaded through the normal map-change mechanism, so
+   listing it there would have the server tell clients to download the very map they're already
+   loading.
 
-Anything it can't find gets logged as missing rather than silently dropped. Use the **Extra
+PACK additionally zips everything into `<mapname>.zip` (named to match the bsp, also in the maps
+folder) - the bsp, the `.res`, the detail.txt if present, and every resolved dependency at its
+correct relative path. The zip *does* include the bsp (unlike the `.res` file) since it's meant
+as a single archive you can hand off or extract straight into a server's mod folder.
+
+Anything unresolvable gets logged as missing rather than silently dropped. Use the **Extra
 File** option (repeatable - check it again for each additional path) to add dependencies the
 scan can't catch on its own: things referenced only through non-standard entity keys, resources
 loaded dynamically rather than declared in the map, or anything from inside a `.mdl`'s own
-internal texture/sound references (RESGEN doesn't parse model files themselves).
+internal texture/sound references (the scan doesn't parse model files themselves).
 
 This is new code, not a place I could point at prior art in the original CompilePal, and I
 can't run it against a real compiled map to confirm the BSP parsing is exactly right - the
 lump layout and entity-text format are stable, well-documented parts of the GoldSrc format, but
-if the `.res`/zip come out empty or wrong, paste me what RESGEN logged (turn on **Verbose Scan
+if the `.res`/zip come out empty or wrong, paste me what it logged (turn on **Verbose Scan
 Log** first) and I'll fix it.
 
 ## What's different from CompilePal

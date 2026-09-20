@@ -113,7 +113,9 @@ namespace CompilePalX
             // (particle manifests, soundscapes, cubemaps, nav meshes) are all Source Engine
             // concepts with no GoldSrc equivalent, so CompileGold doesn't instantiate them.
             CompileProcesses.Add(new ShutdownProcess());
+            CompileProcesses.Add(new HlfixProcess());
             CompileProcesses.Add(new ResourceGenerator());
+            CompileProcesses.Add(new ResourcePackager());
 			CompileProcesses.Add(new CustomProcess());
 
             //collect new metadatas
@@ -362,7 +364,7 @@ namespace CompilePalX
         {
             if (initializeDefaultProcesses)
             {
-                string[] defaultProcesses = new string[] { "HLFIX", "HLCSG", "HLBSP", "HLVIS", "HLRAD", "RESGEN", "COPY", "GAME" };
+                string[] defaultProcesses = new string[] { "HLFIX", "HLCSG", "HLBSP", "HLVIS", "HLRAD", "RESGEN", "PACK", "COPY", "GAME" };
                 preset.Processes = defaultProcesses.ToDictionary(key => key, key => new List<PresetProcessParameter>());
             }
 
