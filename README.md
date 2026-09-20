@@ -17,7 +17,7 @@
 
 ## Features
 * Packing
-* Error Checking
+* Error Checking (Use google)
 * Not freezing your computer while compiling
 * Plugins and Custom Compile Steps
 * Batch Compiling
