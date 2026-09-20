@@ -8,6 +8,8 @@
   <img src="https://github.com/074769/CompileGold/blob/471fe9cbf5fb873d00f795e90e39911725261412/%7BBBB9C8FB-5015-498F-BCFA-D3181F12478D%7D.png" alt="Sublime's custom image"/>
 </p>
 
+## IMPORTANT NOTICE
+# No Geometry Correction must be ticked for hlfix if you are using J.A.C.K or Trenchbroom when exporting to rmf. If you export/save to .map, u can disable hlfix.
 
 
 ## Downloads
