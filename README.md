@@ -1,5 +1,6 @@
-<p align="center">![image](https://github.com/074769/CompileGold/blob/a6cd908f779528d8249231283e8e511d44f474f2/Lmao.png)</p>
-
+<p align="center">Compile Gold.</p>
+<p align="center">
+  <img src="https://github.com/074769/CompileGold/blob/a6cd908f779528d8249231283e8e511d44f474f2/Lmao.png" alt="Sublime's custom image"/>
 </p>
 <p align="center">CompileGold is an easy to use wrapper for the GoldSRC SDHLT map compiling tools.</p>
 
