@@ -1,7 +1,7 @@
 <p align="center">
 	<img
 		alt="CompileGold"
-		src="http://i.imgur.com/jPEig83.png"
+		src="https://imgur.com/wdoDfad"
 		width="400"
 	/>
 </p>
