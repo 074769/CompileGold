@@ -9,7 +9,8 @@
 </p>
 
 ## IMPORTANT NOTICE
-# No Geometry Correction must be ticked for hlfix if you are using J.A.C.K or Trenchbroom when exporting to rmf. If you export/save to .map, u can disable hlfix.
+# No Geometry Correction must be ticked for hlfix if you are using J.A.C.K or Trenchbroom when exporting to rmf. 
+# If you export/save to .map, u can disable hlfix.
 
 
 ## Downloads
