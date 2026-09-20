@@ -18,6 +18,7 @@
 
 
 ## Features
+* Made to work with SDHLT (https://github.com/seedee/SDHLT) - Have not tested other tools, since all parameters are from SDHLT.
 * Packing (Next Update)
 * Error Checking (Use google)
 * Not freezing your computer while compiling (skill issue)
