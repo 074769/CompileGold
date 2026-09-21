@@ -103,12 +103,13 @@ namespace CompilePalX
 
             foreach (Match match in LimitLine.Matches(rawOutput))
             {
-                bool isStar = match.Groups[1].Success && match.Groups[1].Value.Trim() == "*";
+                // the leading "*" (sub-entries like "worldfaces" under "faces") is just
+                // captured to keep the regex accurate - dropped here for a clean label
                 string label = match.Groups[2].Value;
                 if (!double.TryParse(match.Groups[3].Value, out double percent))
                     continue;
 
-                results.Add(new LimitEntry(isStar ? $"* {label}" : label, percent));
+                results.Add(new LimitEntry(label, percent));
             }
 
             return results;
