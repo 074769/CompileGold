@@ -10,6 +10,7 @@
 
 ## IMPORTANT NOTICE
 # No Geometry Correction must be ticked for hlfix if you are using J.A.C.K or Trenchbroom when exporting to rmf. 
+# You must create a wad.txt with the wads you are using and place it in the same directory as your rmf. 
 # If you export/save to .map, u can disable hlfix.
 
 
@@ -23,7 +24,7 @@
 ## Features
 * Light/Night mode.
 * Made to work with SDHLT (https://github.com/seedee/SDHLT) - Have not tested other tools, since all parameters are from SDHLT.
-* Packing (Next Update)
+* Packing 
 * Error Checking (Use google)
 * Not freezing your computer while compiling (skill issue)
 * Plugins and Custom Compile Steps (Shrugs)
@@ -48,6 +49,7 @@ New features or bugfixes are always welcome. Feel free to create a pull request.
 - [maxdup](https://github.com/maxdup)
 - [Exactol](https://github.com/Exactol)
 - iMilo
+- Claude AI 
 
 
 ### Bug Testing
