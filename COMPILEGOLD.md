@@ -6,27 +6,35 @@ SDHLT, etc. - anything shipping `hlcsg.exe`/`hlbsp.exe`/`hlvis.exe`/`hlrad.exe`/
 those standard names). It shares no identity, settings, telemetry, or update channel with the
 original CompilePal.
 
-## Compile telemetry panel
+## Compile telemetry: Status + Statistics panels
 
-A side panel (210px, always open, docked to the right of the main window) shows, per compile
-step: a green/red circle for pass/fail, time spent in seconds, and - for
-HLCSG/HLBSP/HLVIS/HLRAD/HLFIX specifically - the BSP limits usage report those tools print (the
-`models ( 0.2%)`, `* worldfaces ( 6.0%)` style block, on by default now via `-chart` - see below),
-each line color-graded white (0%) -> green (25%) -> yellow (50%) -> red (100%), linearly
-interpolated between those stops.
+Two panels (170px each, always open, docked to the right of the main window):
+
+- **Status** - one entry per compile step that ran: a green/red circle for pass/fail and time
+  spent in seconds. Nothing else.
+- **Statistics** - the BSP limits usage report (the `models ( 4.9%)`, `* worldfaces ( 27.6%)`
+  style block, on by default now via `-chart` - see below), color-graded white (0%) -> green
+  (25%) -> yellow (50%) -> red (100%), linearly interpolated between those stops. **Only ever
+  populated from HLVIS or HLRAD** - HLCSG/HLBSP's own `-chart` output still runs (useful in the
+  log itself) but is deliberately not shown here, since it reflects an earlier, less complete
+  stage of the same map and would just be redundant/stale next to VIS/RAD's numbers. Whichever
+  of HLVIS/HLRAD reports a limits block most recently replaces what Statistics shows - it's a
+  single current snapshot, not a running list.
 
 How it's wired: `CompileExecutable` (the base class HLFIX/HLCSG/HLBSP/HLVIS/HLRAD/COPY/GAME all
-run through) now accumulates its full captured stdout into a `RawOutput` buffer as it streams,
+run through) accumulates its full captured stdout+stderr into a `RawOutput` buffer as it streams,
 alongside the existing live log display. `CompilingManager`'s per-step loop times each `Run()`
 call with a `Stopwatch`, checks that step's `CompileErrors` for anything `Error` severity or
-worse to decide pass/fail, and regex-parses `RawOutput` for the limits-report lines
-(`^\s*(\*\s*)?([A-Za-z][A-Za-z0-9_]*)\s*\(\s*([\d.]+)\s*%\)\s*$`) - all pushed into a static
-`TelemetryManager.Entries` collection the panel's `ItemsControl` binds to directly (the same
-`{x:Static ...}` pattern this app already uses for `OrderManager.CurrentOrder`). Cleared at the
-start of each compile run.
+worse to decide pass/fail, and (only for HLVIS/HLRAD) regex-parses `RawOutput` for the
+limits-report lines - the real format has `Objects/Maxobjs` and `Memory/Maxmem` columns before
+the percentage, e.g. `models 25/512 1600/32768 ( 4.9%)`, so the regex
+(`^\s*(\*\s*)?([A-Za-z][A-Za-z0-9_]*)\s+.*\(\s*([\d.]+)\s*%\)\s*$`) matches the label and
+whatever `(xx.x%)` trails the line and ignores the columns in between. Both panels bind directly
+to static `TelemetryManager` collections (`Entries`, `Statistics`) the same `{x:Static ...}` way
+this app already binds `OrderManager.CurrentOrder`. Cleared at the start of each compile run.
 
 RESGEN/PACK/SHUTDOWN/CUSTOM aren't `CompileExecutable`s (no captured stdout to parse), so they
-still get a timing/pass-fail entry but never a limits report - expected, not a bug.
+still get a Status entry but never touch Statistics - expected, not a bug.
 
 ## HLFIX auto-skip
 

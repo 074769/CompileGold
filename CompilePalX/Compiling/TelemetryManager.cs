@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace CompilePalX
@@ -21,35 +22,38 @@ namespace CompilePalX
         public string Display => $"{Label} ({Percent:0.0}%)";
     }
 
-    /// <summary>One compile step's timing, pass/fail state, and any BSP limits it reported.</summary>
+    /// <summary>One compile step's timing and pass/fail state, for the Status panel.</summary>
     public class ToolTelemetryEntry : INotifyPropertyChanged
     {
         public string ToolName { get; }
         public TimeSpan Duration { get; }
         public bool Passed { get; }
-        public ObservableCollection<LimitEntry> Limits { get; }
 
         public string DurationText => $"{Duration.TotalSeconds:0.00}s";
 
-        public ToolTelemetryEntry(string toolName, TimeSpan duration, bool passed, IEnumerable<LimitEntry> limits)
+        public ToolTelemetryEntry(string toolName, TimeSpan duration, bool passed)
         {
             ToolName = toolName;
             Duration = duration;
             Passed = passed;
-            Limits = new ObservableCollection<LimitEntry>(limits);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
     }
 
     /// <summary>
-    /// Tracks per-tool compile telemetry (time spent, pass/fail, BSP limits usage) for display
-    /// in the side panel. Cleared at the start of each compile run and appended to as each
-    /// compile step finishes.
+    /// Tracks per-tool compile telemetry (time spent, pass/fail) for the Status panel, and the
+    /// BSP limits report (Statistics panel) - the latter only from HLVIS/HLRAD, whichever ran
+    /// most recently, since HLCSG/HLBSP's own -chart output reflects an earlier, less complete
+    /// stage of the same map and would just be redundant/stale next to VIS/RAD's. Cleared at the
+    /// start of each compile run and appended to as each compile step finishes.
     /// </summary>
     public static class TelemetryManager
     {
         public static ObservableCollection<ToolTelemetryEntry> Entries { get; } = [];
+        public static ObservableCollection<LimitEntry> Statistics { get; } = [];
+
+        private static readonly string[] StatisticsSourceTools = ["HLVIS", "HLRAD"];
 
         // Matches lines from the HLT tools' -chart limits report, e.g.:
         //   models             25/512         1600/32768    ( 4.9%)
@@ -61,14 +65,32 @@ namespace CompilePalX
 
         public static void Clear()
         {
-            MainWindow.ActiveDispatcher.Invoke(() => Entries.Clear());
+            MainWindow.ActiveDispatcher.Invoke(() =>
+            {
+                Entries.Clear();
+                Statistics.Clear();
+            });
         }
 
         public static void Record(string toolName, TimeSpan duration, bool passed, string rawOutput)
         {
-            var limits = ParseLimits(rawOutput);
-            var entry = new ToolTelemetryEntry(toolName, duration, passed, limits);
-            MainWindow.ActiveDispatcher.Invoke(() => Entries.Add(entry));
+            var entry = new ToolTelemetryEntry(toolName, duration, passed);
+
+            MainWindow.ActiveDispatcher.Invoke(() =>
+            {
+                Entries.Add(entry);
+
+                if (StatisticsSourceTools.Contains(toolName, StringComparer.OrdinalIgnoreCase))
+                {
+                    var limits = ParseLimits(rawOutput);
+                    if (limits.Count > 0)
+                    {
+                        Statistics.Clear();
+                        foreach (var limit in limits)
+                            Statistics.Add(limit);
+                    }
+                }
+            });
         }
 
         public static List<LimitEntry> ParseLimits(string? rawOutput)

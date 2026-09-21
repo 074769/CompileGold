@@ -566,39 +566,58 @@
         <Label Name="TimeElapsedLabel" Visibility="Collapsed" Grid.Row="2" VerticalAlignment="Bottom" FontWeight="Bold" HorizontalAlignment="Left" Margin="10" />
         </Grid>
 
-        <Border Name="TelemetryPanel" Grid.Column="1" Width="210"
-                Background="{DynamicResource CompilePal.Brushes.DockBackground}"
-                BorderBrush="{DynamicResource MahApps.Brushes.Accent}" BorderThickness="1,0,0,0">
-            <DockPanel Margin="6">
-                <TextBlock DockPanel.Dock="Top" Text="Compile Telemetry" FontWeight="Bold" FontSize="13" Margin="2,0,0,6"/>
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <ItemsControl ItemsSource="{Binding Source={x:Static local:TelemetryManager.Entries}}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border BorderBrush="{DynamicResource MahApps.Brushes.Gray3}" BorderThickness="0,0,0,1" Padding="1,4,1,6" Margin="0,0,0,2">
-                                    <StackPanel>
-                                        <DockPanel>
-                                            <Ellipse Width="9" Height="9" VerticalAlignment="Center" Margin="0,0,5,0"
-                                                     Fill="{Binding Passed, Converter={StaticResource BoolToPassFailBrushConverter}}"/>
-                                            <TextBlock Text="{Binding ToolName}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
-                                        </DockPanel>
-                                        <TextBlock Text="{Binding DurationText}" Margin="14,1,0,3" Opacity="0.8" FontSize="10"/>
-                                        <ItemsControl ItemsSource="{Binding Limits}" Margin="14,0,0,0">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock Text="{Binding Display}" FontSize="10" FontFamily="Consolas" TextWrapping="Wrap"
-                                                               Foreground="{Binding Percent, Converter={StaticResource PercentToColorConverter}}"/>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </StackPanel>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-            </DockPanel>
-        </Border>
+        <Grid Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="170"/>
+                <ColumnDefinition Width="170"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Status: which tools ran, pass/fail, time spent -->
+            <Border Name="StatusPanel" Grid.Column="0"
+                    Background="{DynamicResource CompilePal.Brushes.DockBackground}"
+                    BorderBrush="{DynamicResource MahApps.Brushes.Accent}" BorderThickness="1,0,0,0">
+                <DockPanel Margin="6">
+                    <TextBlock DockPanel.Dock="Top" Text="Status" FontWeight="Bold" FontSize="13" Margin="2,0,0,6"/>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Source={x:Static local:TelemetryManager.Entries}}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{DynamicResource MahApps.Brushes.Gray3}" BorderThickness="0,0,0,1" Padding="1,4,1,6" Margin="0,0,0,2">
+                                        <StackPanel>
+                                            <DockPanel>
+                                                <Ellipse Width="9" Height="9" VerticalAlignment="Center" Margin="0,0,5,0"
+                                                         Fill="{Binding Passed, Converter={StaticResource BoolToPassFailBrushConverter}}"/>
+                                                <TextBlock Text="{Binding ToolName}" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
+                                            </DockPanel>
+                                            <TextBlock Text="{Binding DurationText}" Margin="14,1,0,0" Opacity="0.8" FontSize="10"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+
+            <!-- Statistics: the BSP limits report, from HLVIS/HLRAD only -->
+            <Border Name="StatisticsPanel" Grid.Column="1"
+                    Background="{DynamicResource CompilePal.Brushes.DockBackground}"
+                    BorderBrush="{DynamicResource MahApps.Brushes.Accent}" BorderThickness="1,0,0,0">
+                <DockPanel Margin="6">
+                    <TextBlock DockPanel.Dock="Top" Text="Statistics" FontWeight="Bold" FontSize="13" Margin="2,0,0,6"/>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Source={x:Static local:TelemetryManager.Statistics}}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Display}" FontSize="10" FontFamily="Consolas" TextWrapping="Wrap" Margin="0,0,0,1"
+                                               Foreground="{Binding Percent, Converter={StaticResource PercentToColorConverter}}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+        </Grid>
     </Grid>
 
     <Window.TaskbarItemInfo>
