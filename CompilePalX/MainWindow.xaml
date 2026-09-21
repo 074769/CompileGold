@@ -568,8 +568,8 @@
 
         <Grid Grid.Column="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="170"/>
-                <ColumnDefinition Width="170"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="260"/>
             </Grid.ColumnDefinitions>
 
             <!-- Status: which tools ran, pass/fail, time spent -->
@@ -609,7 +609,7 @@
                         <ItemsControl ItemsSource="{Binding Source={x:Static local:TelemetryManager.Statistics}}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Display}" FontSize="10" FontFamily="Consolas" TextWrapping="Wrap" Margin="0,0,0,1"
+                                    <TextBlock Text="{Binding Display}" FontSize="13" FontWeight="Bold" FontFamily="Consolas" TextWrapping="Wrap" Margin="0,0,0,2"
                                                Foreground="{Binding Percent, Converter={StaticResource PercentToColorConverter}}"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
