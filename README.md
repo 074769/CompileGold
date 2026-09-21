@@ -10,7 +10,7 @@
 
 ## IMPORTANT NOTICE
 # No Geometry Correction must be ticked for hlfix if you are using J.A.C.K or Trenchbroom when exporting to rmf. 
-# You must create a wad.txt with the wads you are using and place it in the same directory as your rmf. 
+# You must create a wad.txt with the wads path you are using and place it in the same directory as your rmf, if you want to compile from .rmf. 
 # If you export/save to .map, u can disable hlfix.
 
 
