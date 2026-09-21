@@ -18,7 +18,7 @@
 
 #### Latest Release
 
-[Compile Gold V0.1](https://github.com/074769/CompileGold/releases)
+[Compile Gold V1](https://github.com/074769/CompileGold/releases)
 
 
 ## Features
