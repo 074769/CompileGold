@@ -31,18 +31,6 @@
 * Batch Compiling
 * Much More! (?)
 
-## Guides
-* [Quick Start](Guides/QuickStart.md)
-* [Reporting An Issue](Guides/Issues.md)
-* [Plugin Development (Beta)](Guides/Plugins.md)
-* [Custom Compile Steps](Guides/Custom.md)
-* [Custom Compile Step Collection](Guides/CustomCollection.md)
-* [Command Line Arguments](Guides/CMDArgs.md)
-* [Registry Values](Guides/Registry.md)
-
-## Contributing
-
-New features or bugfixes are always welcome. Feel free to create a pull request. We also make good use of any issues [reported to us](https://github.com/ruarai/CompilePal/issues).
 
 ### Developers
 - [ruarai](https://github.com/ruarai)
