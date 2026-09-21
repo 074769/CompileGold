@@ -51,9 +51,13 @@ namespace CompilePalX
     {
         public static ObservableCollection<ToolTelemetryEntry> Entries { get; } = [];
 
-        // Matches lines like "models             ( 0.2%)" or "* worldfaces       ( 6.0%)"
-        // printed by the HLT tools' BSP limits report (typically after HLVIS/HLRAD/HLBSP).
-        private static readonly Regex LimitLine = new(@"^\s*(\*\s*)?([A-Za-z][A-Za-z0-9_]*)\s*\(\s*([\d.]+)\s*%\)\s*$", RegexOptions.Multiline);
+        // Matches lines from the HLT tools' -chart limits report, e.g.:
+        //   models             25/512         1600/32768    ( 4.9%)
+        //   * worldfaces     9033/32768          0/0        (27.6%)
+        //   texdata          [variable]   18639348/33554432 (55.5%)
+        // Only the label and the trailing percentage are captured - the Objects/Maxobjs and
+        // Memory/Maxmem columns in between are ignored (shown in "short form", % only).
+        private static readonly Regex LimitLine = new(@"^\s*(\*\s*)?([A-Za-z][A-Za-z0-9_]*)\s+.*\(\s*([\d.]+)\s*%\)\s*$", RegexOptions.Multiline);
 
         public static void Clear()
         {

@@ -20,9 +20,7 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel Orientation="Vertical" FocusManager.FocusedElement="{Binding ElementName=ErrorSourceURL}">
-                <TextBox Template="{StaticResource LabeledTextbox}" Text="{Binding Path=ErrorSourceURL, Mode=TwoWay}" Tag="Error Source" Name="ErrorSourceURL"/>
-                <TextBox Template="{StaticResource LabeledTextbox}" Text="{Binding Path=ErrorCacheExpirationDays , Mode=TwoWay}" Tag="Error Cache Duration" Name="ErrorCacheDurationDays" ToolTip="How many days to cache error information" PreviewTextInput="ErrorCacheDurationDays_PreviewTextInput"/>
+            <StackPanel Orientation="Vertical">
                 <StackPanel Margin="0, 0, 0, 5" HorizontalAlignment="Left">
                     <Label Padding="0, 5 5, 5" Margin="0, 0, -5, 0" IsTabStop="False">Play Sound On Compile Completion</Label>
                     <CheckBox IsChecked="{Binding Path=PlaySoundOnCompileCompletion, Mode=TwoWay}" Focusable="True" HorizontalAlignment="Left"/>

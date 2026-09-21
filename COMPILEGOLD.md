@@ -99,6 +99,28 @@ already `DynamicResource` for exactly this reason).
 this project already uses (very standard convention, but I can't build here to confirm), and I
 haven't been able to actually run the live swap to watch it repaint.
 
+## Recent fixes (round 3)
+
+- **Limits report regex fixed for the real `-chart` output.** The actual format has three
+  columns (`Objects/Maxobjs`, `Memory/Maxmem`, `Fullness`) before the percentage, not just the
+  label and a percentage on their own - the old regex required `(` right after the label and
+  never matched. Now matches the label and whatever trailing `(xx.x%)` is on the line, ignoring
+  everything in between, and still displays in the short "label (xx.x%)" form in the panel.
+- **Removed "Error Source" / "Error Cache Duration" from Settings**, and everything behind
+  them. That URL (`interlopers.net/includes/errorpage/errorChecker.txt`) is a Source Engine
+  VBSP/VVIS/VRAD error database - it was the *only* thing populating error detection (no local
+  fallback existed), which meant every pass/fail circle in the telemetry panel was running on a
+  database that could never match HLCSG/HLBSP/HLVIS/HLRAD/hlfix output in the first place, and
+  the app was making a pointless network call to a Source-only site on every launch. Replaced
+  with a small hand-picked local pattern set (`Error:`, `MAX_MAP_*` limit overflows, `Command
+  line error`, wad-not-found, tool crashes as fatal; `Warning:`, leaks, fullbright as warnings) -
+  no network call, works offline. **This is a best-effort list, not verified against real tool
+  output** (same caveat as everywhere else in this fork) - if a real failure isn't turning the
+  circle red, or a real warning is, that's a missing/wrong pattern in `LoadBuiltInGoldSrcErrors()`
+  in `ErrorFinder.cs`, tell me the actual line of output and I'll add it correctly.
+- Removed a chunk of now-fully-dead code along with the above: the HTTP fetch, the JSON/text
+  error-database parsers, and their now-unused fields/usings.
+
 ## Recent fixes (round 2)
 
 - **Limits report wasn't appearing in the telemetry panel at all.** Two real bugs found:

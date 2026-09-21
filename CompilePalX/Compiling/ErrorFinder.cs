@@ -1,19 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Markup;
 using System.Windows.Media;
 using CompilePalX.Compiling;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace CompilePalX
 {
@@ -21,107 +13,49 @@ namespace CompilePalX
     {
         private static List<Error> errorList = [];
 
-        [GeneratedRegex("<h4>(.*?)</h4>")]
-        private static partial Regex ErrorRegex();
-        private static Regex errorDescriptionPattern = ErrorRegex();
-
-        private static string errorStyle = Path.Combine("./Compiling", "errorstyle.html");
-        private static string errorCache = Path.Combine("./Compiling", "errors.txt");
+        /// <summary>
+        /// CompilePal originally downloaded its known-error database from interlopers.net, a
+        /// Source Engine mapping site - its patterns are for VBSP/VVIS/VRAD error text and will
+        /// never match HLCSG/HLBSP/HLVIS/HLRAD/hlfix output, so that fetch (and the network call
+        /// it made on every launch) has no value for CompileGold. Errors/CompileErrors and the
+        /// pass/fail state in the telemetry panel all depend on GetError() matching *something*,
+        /// so this seeds a small local, hand-picked set of well-established HLT-family error and
+        /// warning patterns instead. Best-effort: I can't run these tools to verify exact wording
+        /// against real output, so this is scoped to conventions that have been stable across the
+        /// whole ZHLT/HLT tool lineage for a long time, not an exhaustive list. If a real failure
+        /// isn't getting flagged, the fix is adding its pattern here.
+        /// </summary>
         public static void Init(bool refresh = false)
         {
-            Thread t = new Thread(() => AsyncInit(ConfigurationManager.Settings.ErrorSourceURL, ConfigurationManager.Settings.ErrorCacheExpirationDays, refresh));
-            t.Start();
+            LoadBuiltInGoldSrcErrors();
         }
 
-        static async void AsyncInit(string errorURL, int errorCacheExpirationDays, bool refresh)
+        private static void LoadBuiltInGoldSrcErrors()
         {
-            try
-            {
-                if (!refresh && (File.Exists(errorCache) && (DateTime.Now.Subtract(File.GetLastWriteTime(errorCache)).TotalDays < errorCacheExpirationDays)))
-                {
-                    LoadJSONErrorData(File.ReadAllText(errorCache));
-                    return;
-                }
-
-                try
-                {
-                    var c = new HttpClient();
-                    c.DefaultRequestHeaders.ExpectContinue = true;
-                    var httpResult = await c.GetAsync(errorURL);
-                    string result = await c.GetStringAsync(new Uri(errorURL));
-
-                    httpResult.Headers.TryGetValues("Content-Type", out var contentType);
-                    if (contentType != null && contentType.First() == "application/json")
-                    {
-                        LoadJSONErrorData(result);
-                    } else
-                    {
-                        LoadTextErrorData(result);
-                    }
-
-                    await File.WriteAllTextAsync(errorCache, JsonConvert.SerializeObject(errorList, new RegexConverter()));
-                }
-                catch (Exception e)
-                {
-                    // fallback to cache if download fails
-                    ExceptionHandler.LogException(e, false);
-                    if (File.Exists((errorCache)))
-                    {
-                        CompilePalLogger.LogLineDebug("Loading error data from cache");
-                        LoadJSONErrorData(await File.ReadAllTextAsync(errorCache));
-                    }
-                    else
-                    {
-                        CompilePalLogger.LogLineDebug($"Error cache not found: {errorCache}");
-                    }
-                }
-            }
-            catch (Exception x)
-            {
-                //nonvital part, record but dont quit
-                ExceptionHandler.LogException(x, false);
-            }
-        }
-
-        static void LoadJSONErrorData(string input)
-        {
-            var errors = JsonConvert.DeserializeObject<List<Error>>(input, new RegexConverter()) ?? throw new Exception("Failed to deserialize errors");
-            for (var i = 0; i < errors.Count; i++)
-            {
-                errors[i].ID = i;
-            }
-            errorList = errors;
-        }
-
-        static void LoadTextErrorData(string input)
-        {
-            string style = File.ReadAllText(errorStyle);
-
-            var lines = input.Split(["\r\n", "\n"], StringSplitOptions.None);
-
-            int count = int.Parse(lines[0]);
-
+            errorList = [];
             int id = 0;
-            for (int i = 1; i < (count * 2) + 1; i++)
+
+            void Add(string pattern, ErrorSeverity severity, string description)
             {
-                Error error = new Error();
-
-                var data = lines[i].Split('|');
-
-                error.Severity = int.Parse(data[0]);
-                error.RegexTrigger = new Regex(data[1]);
-                i++;
-
-                var shortDesc = errorDescriptionPattern.Match(lines[i]);
-                error.ShortDescription = shortDesc.Success ? shortDesc.Groups[1].Value : "unknown error";
-
-                error.Message = style.Replace("%content%", lines[i]);
-
-
-                error.ID = id;
-                errorList.Add(error);
-                id++;
+                errorList.Add(new Error(description, description, severity, id++)
+                {
+                    RegexTrigger = new Regex(pattern, RegexOptions.IgnoreCase)
+                });
             }
+
+            // fatal - compile did not produce a usable result
+            Add(@"^Error:", ErrorSeverity.FatalError, "Fatal compile error");
+            Add(@"MAX_MAP_\w+", ErrorSeverity.FatalError, "Exceeded a hardcoded engine limit");
+            Add(@"^Command line error", ErrorSeverity.FatalError, "Invalid command line arguments");
+            Add(@"Failed to run executable", ErrorSeverity.FatalError, "Could not launch the compile tool");
+            Add(@"Unhandled Exception|Access Violation", ErrorSeverity.FatalError, "Tool crashed");
+            Add(@"can'?t (open|find|load)\b.*\.wad", ErrorSeverity.FatalError, "Could not find a referenced WAD file");
+            Add(@"input file can'?t be the same as output file", ErrorSeverity.FatalError, "hlfix input/output collision");
+
+            // warning - compile likely completed, but something is worth a mapper's attention
+            Add(@"^Warning:|>>> WARNING", ErrorSeverity.Warning, "Compile warning");
+            Add(@"\bleak\b", ErrorSeverity.Warning, "Map has a leak");
+            Add(@"\bfullbright\b", ErrorSeverity.Warning, "Surface with no lighting information");
         }
 
         public static Error? GetError(string line)

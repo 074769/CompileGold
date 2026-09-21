@@ -32,11 +32,5 @@ namespace CompilePalX
             ConfigurationManager.SaveSettings((Settings) this.DataContext);
             Close();
         }
-
-        private readonly Regex numberRegex = new Regex("[^0-9]+");
-        private void ErrorCacheDurationDays_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            e.Handled = numberRegex.IsMatch(e.Text);
-        }
     }
 }
