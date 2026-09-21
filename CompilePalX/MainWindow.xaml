@@ -606,14 +606,35 @@
                 <DockPanel Margin="6">
                     <TextBlock DockPanel.Dock="Top" Text="Statistics" FontWeight="Bold" FontSize="13" Margin="2,0,0,6"/>
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <ItemsControl ItemsSource="{Binding Source={x:Static local:TelemetryManager.Statistics}}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Display}" FontSize="13" FontWeight="Bold" FontFamily="Consolas" TextWrapping="Wrap" Margin="0,0,0,2"
-                                               Foreground="{Binding Percent, Converter={StaticResource PercentToColorConverter}}"/>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <ItemsControl Grid.Column="0" ItemsSource="{Binding Source={x:Static local:TelemetryManager.Statistics}}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding LabelUpper}" FontWeight="Bold" FontSize="13" FontFamily="Consolas"
+                                                   TextTrimming="CharacterEllipsis" Margin="0,0,4,4"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <Border Grid.Column="1" Width="1" Margin="0,0,4,0"
+                                    Background="{DynamicResource MahApps.Brushes.Accent}"/>
+
+                            <ItemsControl Grid.Column="2" ItemsSource="{Binding Source={x:Static local:TelemetryManager.Statistics}}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding PercentText}" FontWeight="Bold" FontSize="13" FontFamily="Consolas"
+                                                   HorizontalAlignment="Right" Margin="0,0,0,4"
+                                                   Foreground="{Binding Percent, Converter={StaticResource PercentToColorConverter}}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
                     </ScrollViewer>
                 </DockPanel>
             </Border>

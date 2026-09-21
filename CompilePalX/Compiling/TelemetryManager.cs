@@ -20,6 +20,8 @@ namespace CompilePalX
         }
 
         public string Display => $"{Label} ({Percent:0.0}%)";
+        public string LabelUpper => Label.ToUpperInvariant();
+        public string PercentText => $"{Percent:0.0}%";
     }
 
     /// <summary>One compile step's timing and pass/fail state, for the Status panel.</summary>
