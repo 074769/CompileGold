@@ -24,7 +24,8 @@
 ## Features
 * Light/Night mode.
 * Made to work with SDHLT (https://github.com/seedee/SDHLT) - Have not tested other tools, since all parameters are from SDHLT.
-* Packing 
+* Packing
+* Statistics/Status
 * Error Checking (Use google)
 * Not freezing your computer while compiling (skill issue)
 * Plugins and Custom Compile Steps (Shrugs)
