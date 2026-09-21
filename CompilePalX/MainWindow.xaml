@@ -619,7 +619,8 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding LabelUpper}" FontWeight="Bold" FontSize="13" FontFamily="Consolas"
-                                                   TextTrimming="CharacterEllipsis" Margin="0,0,4,4"/>
+                                                   TextTrimming="CharacterEllipsis" Margin="0,0,4,4"
+                                                   Foreground="{Binding Percent, Converter={StaticResource PercentToColorConverter}}"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
