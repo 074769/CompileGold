@@ -1,10 +1,21 @@
 ﻿using System;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
 namespace CompilePalX
 {
+    /// <summary>True -> Collapsed, false -> Visible. Used to show the pass/fail circle only once a tool has stopped running (the inverse of IsRunning).</summary>
+    public class InverseBooleanToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
+            value is true ? Visibility.Collapsed : Visibility.Visible;
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+            throw new NotImplementedException();
+    }
+
     /// <summary>True (passed) -> green, false (failed) -> red. Used for the pass/fail circle next to each tool.</summary>
     public class BoolToPassFailBrushConverter : IValueConverter
     {

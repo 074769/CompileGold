@@ -177,6 +177,7 @@ namespace CompilePalX
                         cancellationToken.ThrowIfCancellationRequested();
                         currentCompileProcess = compileProcess;
 
+                        var telemetryEntry = TelemetryManager.Start(compileProcess.Name);
                         var stepStopwatch = Stopwatch.StartNew();
                         compileProcess.Run(buildContext, cancellationToken);
                         stepStopwatch.Stop();
@@ -185,7 +186,7 @@ namespace CompilePalX
 
                         bool stepPassed = !currentCompileProcess.CompileErrors.Any(e => e.Severity >= (int)ErrorSeverity.Error);
                         string stepOutput = (compileProcess as CompileExecutable)?.RawOutput.ToString() ?? "";
-                        TelemetryManager.Record(compileProcess.Name, stepStopwatch.Elapsed, stepPassed, stepOutput);
+                        TelemetryManager.Finish(telemetryEntry, stepStopwatch.Elapsed, stepPassed, stepOutput);
 
                         //Portal 2 cannot work with leaks, stop compiling if we do get a leak.
                         if (GameConfigurationManager.GameConfiguration.Name == "Portal 2")

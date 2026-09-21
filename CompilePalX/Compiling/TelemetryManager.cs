@@ -24,23 +24,46 @@ namespace CompilePalX
         public string PercentText => $"{Percent:0.0}%";
     }
 
-    /// <summary>One compile step's timing and pass/fail state, for the Status panel.</summary>
+    /// <summary>
+    /// One compile step's timing and pass/fail state, for the Status panel. Created (via
+    /// TelemetryManager.Start) the moment a step begins, while it's still running - shown as a
+    /// progress bar in that state - then updated in place (via TelemetryManager.Finish) once it
+    /// completes, switching the UI over to the pass/fail circle and duration.
+    /// </summary>
     public class ToolTelemetryEntry : INotifyPropertyChanged
     {
         public string ToolName { get; }
-        public TimeSpan Duration { get; }
-        public bool Passed { get; }
+
+        private bool isRunning = true;
+        public bool IsRunning
+        {
+            get => isRunning;
+            set { isRunning = value; OnPropertyChanged(nameof(IsRunning)); }
+        }
+
+        private TimeSpan duration;
+        public TimeSpan Duration
+        {
+            get => duration;
+            set { duration = value; OnPropertyChanged(nameof(Duration)); OnPropertyChanged(nameof(DurationText)); }
+        }
+
+        private bool passed;
+        public bool Passed
+        {
+            get => passed;
+            set { passed = value; OnPropertyChanged(nameof(Passed)); }
+        }
 
         public string DurationText => $"{Duration.TotalSeconds:0.00}s";
 
-        public ToolTelemetryEntry(string toolName, TimeSpan duration, bool passed)
+        public ToolTelemetryEntry(string toolName)
         {
             ToolName = toolName;
-            Duration = duration;
-            Passed = passed;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
+        private void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
     /// <summary>
@@ -74,15 +97,24 @@ namespace CompilePalX
             });
         }
 
-        public static void Record(string toolName, TimeSpan duration, bool passed, string rawOutput)
+        /// <summary>Call as a compile step begins. Adds a running entry (shown as a progress bar) and returns it for Finish() to update.</summary>
+        public static ToolTelemetryEntry Start(string toolName)
         {
-            var entry = new ToolTelemetryEntry(toolName, duration, passed);
+            var entry = new ToolTelemetryEntry(toolName);
+            MainWindow.ActiveDispatcher.Invoke(() => Entries.Add(entry));
+            return entry;
+        }
 
+        /// <summary>Call once a compile step completes. Updates the same entry Start() returned in place, switching its UI from a progress bar to the pass/fail circle.</summary>
+        public static void Finish(ToolTelemetryEntry entry, TimeSpan duration, bool passed, string rawOutput)
+        {
             MainWindow.ActiveDispatcher.Invoke(() =>
             {
-                Entries.Add(entry);
+                entry.Duration = duration;
+                entry.Passed = passed;
+                entry.IsRunning = false;
 
-                if (StatisticsSourceTools.Contains(toolName, StringComparer.OrdinalIgnoreCase))
+                if (StatisticsSourceTools.Contains(entry.ToolName, StringComparer.OrdinalIgnoreCase))
                 {
                     var limits = ParseLimits(rawOutput);
                     if (limits.Count > 0)
