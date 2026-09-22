@@ -22,12 +22,12 @@
             </ComboBox>
         </DockPanel>
 
-        <DataGrid Grid.Row="1" Name="ConfigDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" CanUserSortColumns="False" ItemsSource="{Binding}" >
+        <DataGrid Grid.Row="1" Name="ConfigDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" CanUserSortColumns="True" ItemsSource="{Binding}" >
             <DataGrid.Columns>
-                <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ElementStyle="{DynamicResource MetroDataGridCheckBox}" EditingElementStyle="{DynamicResource MetroDataGridCheckBox}" CanUserSort="False"/>
+                <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ElementStyle="{DynamicResource MetroDataGridCheckBox}" EditingElementStyle="{DynamicResource MetroDataGridCheckBox}" SortMemberPath="IsChecked"/>
                 <DataGridTextColumn Header="Name" Binding="{ Binding Name}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Param" Binding="{ Binding Parameter}" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Description" Binding="{ Binding Description}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Param" Binding="{ Binding Parameter}" IsReadOnly="True" CanUserSort="False"/>
+                <DataGridTextColumn Header="Description" Binding="{ Binding Description}" IsReadOnly="True" CanUserSort="False"/>
                 <DataGridTextColumn Header="Issues" Binding="{ Binding Warning}" IsReadOnly="True"/>
             </DataGrid.Columns>
             <DataGrid.GroupStyle>

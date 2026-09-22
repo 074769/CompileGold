@@ -107,6 +107,31 @@ already `DynamicResource` for exactly this reason).
 this project already uses (very standard convention, but I can't build here to confirm), and I
 haven't been able to actually run the live swap to watch it repaint.
 
+## Recent fixes (round 4)
+
+- **Parameter picker sorting fixed.** `CanUserSortColumns="False"` was set at the DataGrid
+  level in `ParameterAdder.xaml`, silently blocking every column header click regardless of
+  what else was configured per-column - that was the actual bug, not something specific to
+  Name or Enabled. Fixed, and per your ask, Param/Description explicitly opt back out
+  (`CanUserSort="False"`) since sorting by those doesn't make sense; Name and Enabled sort
+  normally now.
+- **Status and Statistics panels are now persistent, not reset per compile.** This needed a
+  real redesign, not a tweak:
+  - **Status**: every tool in the current compile order gets a permanent entry the moment that
+    order is known (via `OrderManager.CurrentOrder`, wired up in `TelemetryManager.Init()`,
+    called once from `MainWindow`'s constructor) - including before you've ever hit compile,
+    shown red (its default `Passed = false`) since nothing's run yet. Running a compile reuses
+    each tool's existing entry in place rather than creating a new one, so results persist and
+    accumulate across runs instead of vanishing when a compile finishes.
+  - **Statistics**: pre-seeded with all 18 known limit labels at 0% on startup. HLVIS/HLRAD
+    runs now update each matching entry's percentage *in place* rather than clearing and
+    rebuilding the list, so it keeps showing the last known numbers between compiles too.
+  - The progress bar is gone - `ToolTelemetryEntry` now runs its own internal timer while a
+    step is active, ticking `Duration` (and so `DurationText`) up live every 100ms, so the same
+    text element serves as both a live elapsed-time readout while running and the final
+    duration once done. No separate "is this one currently running" visual was needed once the
+    number itself is visibly moving.
+
 ## Recent fixes (round 3)
 
 - **Limits report regex fixed for the real `-chart` output.** The actual format has three

@@ -133,7 +133,6 @@ namespace CompilePalX
             compileTimeStopwatch.Start();
 
             OnClear();
-            TelemetryManager.Clear();
 
             cts = new CancellationTokenSource();
             Task.Run(() => CompileThreaded(cts.Token));

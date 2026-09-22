@@ -50,8 +50,6 @@
     <controls:MetroWindow.Resources>
         <local:BoolToPassFailBrushConverter x:Key="BoolToPassFailBrushConverter"/>
         <local:PercentToColorConverter x:Key="PercentToColorConverter"/>
-        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <local:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
         <Style x:Key="GroupListBoxStyle" TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
             <Setter Property="Margin" Value="-5, 0, 0, 0" />
             <Setter Property="Padding" Value="10, 0, 0, 0" />
@@ -591,14 +589,10 @@
                                     <Border BorderBrush="#FF444444" BorderThickness="0,0,0,1" Padding="1,4,1,6" Margin="0,0,0,2">
                                         <StackPanel HorizontalAlignment="Center">
                                             <TextBlock Text="{Binding ToolName}" FontWeight="SemiBold" FontSize="12" TextAlignment="Center"/>
-
-                                            <!-- while running: a small indeterminate progress bar instead of a result -->
-                                            <ProgressBar IsIndeterminate="True" Width="72" Height="6" Margin="0,4,0,0"
-                                                         Visibility="{Binding IsRunning, Converter={StaticResource BoolToVisibilityConverter}}"/>
-
-                                            <!-- once finished: pass/fail circle + duration -->
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,3,0,0"
-                                                        Visibility="{Binding IsRunning, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                            <!-- circle reflects the last known result (red by default, before this tool has ever run).
+                                                 DurationText ticks up live while IsRunning, via the entry's own timer - once finished
+                                                 it just shows the final value, so no separate "running" visual is needed here. -->
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,3,0,0">
                                                 <Ellipse Width="9" Height="9" VerticalAlignment="Center" Margin="0,0,5,0"
                                                          Fill="{Binding Passed, Converter={StaticResource BoolToPassFailBrushConverter}}"/>
                                                 <TextBlock Text="{Binding DurationText}" Opacity="0.8" FontSize="10" VerticalAlignment="Center"/>

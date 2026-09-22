@@ -100,6 +100,8 @@ namespace CompilePalX
 
             ActiveDispatcher = Dispatcher;
 
+            TelemetryManager.Init();
+
             CompilePalLogger.OnWrite += Logger_OnWrite;
             CompilePalLogger.OnBacktrack += Logger_OnBacktrack;
             CompilePalLogger.OnErrorLog += CompilePalLogger_OnError;
