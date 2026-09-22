@@ -100,8 +100,6 @@ namespace CompilePalX
 
             ActiveDispatcher = Dispatcher;
 
-            TelemetryManager.Init();
-
             CompilePalLogger.OnWrite += Logger_OnWrite;
             CompilePalLogger.OnBacktrack += Logger_OnBacktrack;
             CompilePalLogger.OnErrorLog += CompilePalLogger_OnError;
@@ -123,6 +121,11 @@ namespace CompilePalX
 
 
             SetSources();
+
+            // must come after SetSources(), which is what actually initializes
+            // OrderManager.CurrentOrder (via OrderManager.Init()) - subscribing any earlier
+            // throws a NullReferenceException since CurrentOrder is still null until then
+            TelemetryManager.Init();
 
             CompileProcessesListBox.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription("Ordering", System.ComponentModel.ListSortDirection.Ascending));
 

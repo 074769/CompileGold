@@ -141,20 +141,18 @@ namespace CompilePalX
         // Memory/Maxmem columns in between are ignored (shown in "short form", % only).
         private static readonly Regex LimitLine = new(@"^\s*(\*\s*)?([A-Za-z][A-Za-z0-9_]*)\s+.*\(\s*([\d.]+)\s*%\)\s*$", RegexOptions.Multiline);
 
-        private static bool initialized;
-
         /// <summary>
         /// Wires Status up to the current compile order, so every tool that's part of it gets a
         /// permanent entry (defaulting to "never run"/red) as soon as the order is known, rather
-        /// than only appearing once it first runs. Call once at startup; safe to call more than
-        /// once. Existing entries and their results are never touched by this.
+        /// than only appearing once it first runs. Must be called after OrderManager.Init() (it
+        /// replaces CurrentOrder with a fresh collection, so calling this any earlier - or only
+        /// once, since OrderManager.Init() isn't idempotent and runs again on every MainWindow
+        /// construction, e.g. switching games - would leave this subscribed to a stale, orphaned
+        /// collection). Safe to call repeatedly: each call subscribes to whatever CurrentOrder
+        /// currently is. Existing entries and their results are never touched by this.
         /// </summary>
         public static void Init()
         {
-            if (initialized)
-                return;
-            initialized = true;
-
             OrderManager.CurrentOrder.CollectionChanged += (_, _) => SyncWithOrder();
             SyncWithOrder();
         }
