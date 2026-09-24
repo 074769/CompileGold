@@ -13,7 +13,7 @@
 
 #### Latest Release
 
-[Compile Gold V0.1](https://github.com/074769/CompileGold/releases)
+[Compile Gold](https://github.com/074769/CompileGold/releases)
 
 
 ## Features
@@ -26,17 +26,3 @@
 * Plugins and Custom Compile Steps (Shrugs)
 * Batch Compiling
 * Much More! (?)
-
-
-### Developers
-- [ruarai](https://github.com/ruarai)
-- [maxdup](https://github.com/maxdup)
-- [Exactol](https://github.com/Exactol)
-- iMilo
-
-
-### Bug Testing
-- wareya
-- Gangleider 
-- Matt2468rv 
-- Sevin7 
