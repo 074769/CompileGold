@@ -77,6 +77,9 @@ namespace CompilePalX
 
         public string DurationText => $"{Duration.TotalSeconds:0.00}s";
 
+        /// <summary>Incremented every time this entry starts running, so a late Finish() from a cancelled/older run can be told apart from the current run.</summary>
+        public int Generation { get; private set; }
+
         private Stopwatch? liveStopwatch;
         private DispatcherTimer? liveTimer;
 
@@ -87,10 +90,17 @@ namespace CompilePalX
 
         public void StartLiveTimer()
         {
-            liveStopwatch = Stopwatch.StartNew();
-            liveTimer = new DispatcherTimer(DispatcherPriority.Background) { Interval = TimeSpan.FromMilliseconds(100) };
-            liveTimer.Tick += (_, _) => Duration = liveStopwatch.Elapsed;
-            liveTimer.Start();
+            // never leave a previous timer orphaned and ticking (e.g. after a cancelled run)
+            StopLiveTimer();
+            Generation++;
+
+            // the tick captures its own stopwatch, not the field, so stopping/restarting can never null it out from under a tick
+            var stopwatch = Stopwatch.StartNew();
+            var timer = new DispatcherTimer(DispatcherPriority.Background) { Interval = TimeSpan.FromMilliseconds(100) };
+            timer.Tick += (_, _) => Duration = stopwatch.Elapsed;
+            liveStopwatch = stopwatch;
+            liveTimer = timer;
+            timer.Start();
         }
 
         public void StopLiveTimer()
@@ -189,10 +199,14 @@ namespace CompilePalX
         }
 
         /// <summary>Call once a compile step completes. Updates the same entry Start() returned in place - the live timer stops and its final value is kept as the shown duration.</summary>
-        public static void Finish(ToolTelemetryEntry entry, TimeSpan duration, bool passed, string rawOutput)
+        public static void Finish(ToolTelemetryEntry entry, int generation, TimeSpan duration, bool passed, string rawOutput)
         {
             MainWindow.ActiveDispatcher.Invoke(() =>
             {
+                // a newer run has already restarted this entry - don't let a late finish from the old (cancelled) run clobber it
+                if (entry.Generation != generation)
+                    return;
+
                 entry.StopLiveTimer();
                 entry.Duration = duration;
                 entry.Passed = passed;

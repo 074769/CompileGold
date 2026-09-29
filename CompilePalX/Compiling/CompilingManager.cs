@@ -177,15 +177,31 @@ namespace CompilePalX
                         currentCompileProcess = compileProcess;
 
                         var telemetryEntry = TelemetryManager.Start(compileProcess.Name);
+                        int telemetryGeneration = telemetryEntry.Generation;
                         var stepStopwatch = Stopwatch.StartNew();
-                        compileProcess.Run(buildContext, cancellationToken);
+                        try
+                        {
+                            compileProcess.Run(buildContext, cancellationToken);
+                        }
+                        catch
+                        {
+                            // cancelled (or crashed) mid-step: stop the step's timer and mark it failed instead of leaving it running
+                            stepStopwatch.Stop();
+                            TelemetryManager.Finish(telemetryEntry, telemetryGeneration, stepStopwatch.Elapsed, false, "");
+                            throw;
+                        }
                         stepStopwatch.Stop();
 
                         compileErrors.AddRange(currentCompileProcess.CompileErrors);
 
-                        bool stepPassed = !currentCompileProcess.CompileErrors.Any(e => e.Severity >= (int)ErrorSeverity.Error);
+                        // a step that was cancelled counts as failed
+                        bool stepPassed = !cancellationToken.IsCancellationRequested &&
+                                          !currentCompileProcess.CompileErrors.Any(e => e.Severity >= (int)ErrorSeverity.Error);
                         string stepOutput = (compileProcess as CompileExecutable)?.RawOutput.ToString() ?? "";
-                        TelemetryManager.Finish(telemetryEntry, stepStopwatch.Elapsed, stepPassed, stepOutput);
+                        TelemetryManager.Finish(telemetryEntry, telemetryGeneration, stepStopwatch.Elapsed, stepPassed, stepOutput);
+
+                        // Run() can return quietly on cancel; don't carry on to "Compiled Map" / progress updates
+                        cancellationToken.ThrowIfCancellationRequested();
 
                         //Portal 2 cannot work with leaks, stop compiling if we do get a leak.
                         if (GameConfigurationManager.GameConfiguration.Name == "Portal 2")
