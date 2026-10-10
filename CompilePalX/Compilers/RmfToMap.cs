@@ -8,7 +8,7 @@ namespace CompilePalX.Compilers
 {
     /// <summary>
     /// Clean-room .rmf (Rich Map Format, the Hammer 3.x/J.A.C.K. native binary format) to
-    /// classic Quake/HL .map exporter, written from the format's documented structure only -
+    /// Valve220 .map exporter, written from the format's documented structure only -
     /// no third-party conversion code is used or referenced.
     ///
     /// Used automatically at compile time: selecting a .rmf converts it to a .map of the same
@@ -554,67 +554,11 @@ namespace CompilePalX.Compilers
 
             string texture = SanitizeTextureName(face.Texture, result);
 
-            // Classic Quake/HL MAP face syntax (no texture-axis brackets): the compile
-            // tools' MAP parser only accepts this form, so the stored Valve220 UV axes
-            // are projected to plain X/Y offsets here.
-            ProjectUv(face, p0, out double xShift, out double yShift);
-
-            sb.AppendLine("( " + F(p0[0]) + " " + F(p0[1]) + " " + F(p0[2]) + " ) ( " + F(p1[0]) + " " + F(p1[1]) + " " + F(p1[2]) + " ) ( " + F(p2[0]) + " " + F(p2[1]) + " " + F(p2[2]) + " ) " + texture + " " + D(xShift) + " " + D(yShift) + " " + F(face.Rotation) + " " + F(face.XScale) + " " + F(face.YScale));
+            // Valve220 face syntax, byte-identical to what the editor itself exports:
+            // the stored U/V axes, shifts, rotation and scales pass straight through,
+            // so texture alignment is preserved exactly.
+            sb.AppendLine("( " + F(p0[0]) + " " + F(p0[1]) + " " + F(p0[2]) + " ) ( " + F(p1[0]) + " " + F(p1[1]) + " " + F(p1[2]) + " ) ( " + F(p2[0]) + " " + F(p2[1]) + " " + F(p2[2]) + " ) " + texture + " [ " + F(face.U[0]) + " " + F(face.U[1]) + " " + F(face.U[2]) + " " + F(face.XShift) + " ] [ " + F(face.V[0]) + " " + F(face.V[1]) + " " + F(face.V[2]) + " " + F(face.YShift) + " ] " + F(face.Rotation) + " " + F(face.XScale) + " " + F(face.YScale));
             return true;
-        }
-
-        // Projects a Valve220 face (explicit U/V texture axes + shifts) onto the old MAP
-        // alignment model (offsets along the face's dominant world axes + rotation).
-        // For axis-aligned faces (the overwhelmingly common case) this is exact: the
-        // dominant component of each stored axis picks the world axis, and the sign plus
-        // the rotation absorb any axis flips the editor baked in. For arbitrary off-axis
-        // alignments the projection is an approximation - HLCSG recomputes texture axes
-        // from the plane normal anyway, so small deviations there only shift alignment
-        // slightly, they never break the parse.
-        private static void ProjectUv(RmfFace face, float[] origin, out double xShift, out double yShift)
-        {
-            int uAxis = DominantAxis(face.U);
-            int vAxis = DominantAxis(face.V);
-
-            double uSign = face.U[uAxis] >= 0 ? 1.0 : -1.0;
-            double vSign = face.V[vAxis] >= 0 ? 1.0 : -1.0;
-
-            // same world axis on both (slopes at 45 degrees can do this) - keep U, push V
-            // onto the next-best axis so the two offsets stay independent
-            if (vAxis == uAxis)
-            {
-                int fallback = (uAxis + 1) % 3;
-                double best = 0;
-                for (int i = 0; i < 3; i++)
-                {
-                    if (i == uAxis) continue;
-                    double m = Math.Abs(face.V[i]);
-                    if (m > best) { best = m; fallback = i; }
-                }
-                vAxis = fallback;
-                vSign = face.V[vAxis] >= 0 ? 1.0 : -1.0;
-            }
-
-            xShift = (origin[uAxis] * uSign + face.XShift) * uSign;
-            yShift = (origin[vAxis] * vSign + face.YShift) * vSign;
-
-            // stay in a sane numeric range (the tools mod offsets by texture size anyway)
-            xShift -= Math.Floor(xShift / 1024.0) * 1024.0;
-            yShift -= Math.Floor(yShift / 1024.0) * 1024.0;
-            if (xShift > 512.0) xShift -= 1024.0;
-            if (yShift > 512.0) yShift -= 1024.0;
-        }
-
-        private static int DominantAxis(float[] v)
-        {
-            int axis = 0;
-            double best = Math.Abs(v[0]);
-            for (int i = 1; i < 3; i++)
-            {
-                double m = Math.Abs(v[i]);
-                if (m > best) { best = m; axis = i; }
-            }
-            return axis;
         }
 
         private static string SanitizeTextureName(string texture, ConvertResult result)
@@ -657,18 +601,6 @@ namespace CompilePalX.Compilers
             if (!float.IsFinite(value))
                 return "0";
             string s = ((double)value).ToString("0.######", CultureInfo.InvariantCulture);
-            if (s == "-0")
-                return "0";
-            return s;
-        }
-
-        private static string D(double value)
-        {
-            if (double.IsNaN(value) || double.IsInfinity(value))
-                return "0";
-            if (Math.Abs(value) < 0.0000005)
-                return "0";
-            string s = value.ToString("0.######", CultureInfo.InvariantCulture);
             if (s == "-0")
                 return "0";
             return s;
