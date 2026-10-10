@@ -379,12 +379,17 @@ namespace CompilePalX.Compilers
 
             sb.AppendLine("{");
             sb.AppendLine("\"classname\" \"" + Escape(doc.WorldClassName) + "\"");
+            bool hasWadKey = false;
             foreach (var kv in doc.WorldspawnKeyValues)
             {
                 if (string.Equals(kv.Key, "classname", StringComparison.OrdinalIgnoreCase))
                     continue;
+                if (string.Equals(kv.Key, "wad", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(kv.Value))
+                    hasWadKey = true;
                 sb.AppendLine("\"" + Escape(kv.Key) + "\" \"" + Escape(kv.Value) + "\"");
             }
+            if (!hasWadKey)
+                Warn(result, "Worldspawn has no \"wad\" key (the .rmf does not store one) - HLCSG will only look for textures in its own WAD configuration; any texture outside it fails with a LoadLump error. Either add the WADs to HLCSG's config or add a \"wad\" key to worldspawn in the editor before saving the .rmf.");
             foreach (var solid in worldBrushes)
                 WriteBrush(sb, solid, result);
             sb.AppendLine("}");
