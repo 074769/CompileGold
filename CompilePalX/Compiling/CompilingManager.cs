@@ -171,6 +171,41 @@ namespace CompilePalX
 
                     GameConfigurationManager.BackupCurrentContext();
                     var buildContext = GameConfigurationManager.BuildContext(map);
+
+                    // .rmf sources are converted to a same-folder .map first (no external
+                    // tool), then compiled as usual. .map inputs skip conversion entirely.
+                    if (RmfToMap.IsRmfSource(buildContext.MapFile))
+                    {
+                        string convertedMap = Path.ChangeExtension(buildContext.MapFile, ".map");
+                        var telemetryEntry = TelemetryManager.Start("Convert RMF");
+                        int telemetryGeneration = telemetryEntry.Generation;
+                        var convertStopwatch = Stopwatch.StartNew();
+                        try
+                        {
+                            var convertResult = RmfToMap.Convert(buildContext.MapFile, convertedMap);
+                            buildContext.MapFile = convertedMap;
+                            buildContext.BSPFile = Path.ChangeExtension(convertedMap, ".bsp");
+                            CompilePalLogger.LogLine($"Converted {Path.GetFileName(map.File)} to {Path.GetFileName(convertedMap)} ({convertResult.BrushCount} brushes, {convertResult.EntityCount} entities).");
+                            foreach (var warning in convertResult.Warnings)
+                                CompilePalLogger.LogLine($"RMF conversion warning: {warning}");
+                            convertStopwatch.Stop();
+                            TelemetryManager.Finish(telemetryEntry, telemetryGeneration, convertStopwatch.Elapsed, true, "");
+                        }
+                        catch (Exception convertException) when (convertException is not OperationCanceledException)
+                        {
+                            convertStopwatch.Stop();
+                            TelemetryManager.Finish(telemetryEntry, telemetryGeneration, convertStopwatch.Elapsed, false, "");
+                            var error = new Error($"RMF conversion failed: {convertException.Message}", ErrorSeverity.FatalError);
+                            compileErrors.Add(error);
+                            // plain colored line, not LogCompileError: that path notifies
+                            // currentCompileProcess, which isn't set yet at conversion time
+                            CompilePalLogger.LogLineColor($"RMF conversion failed: {convertException.Message}", Error.GetSeverityBrush(5));
+                            mapErrors.Add(new MapErrors { MapName = cleanMapName, Errors = compileErrors });
+                            GameConfigurationManager.RestoreCurrentContext();
+                            continue;
+                        }
+                        cancellationToken.ThrowIfCancellationRequested();
+                    }
 					foreach (var compileProcess in OrderManager.CurrentOrder)
 					{
                         cancellationToken.ThrowIfCancellationRequested();
