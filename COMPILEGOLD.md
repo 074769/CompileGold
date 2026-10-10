@@ -1,10 +1,23 @@
-# CompileGold
+﻿# CompileGold
 
 CompileGold is a fork of [ruarai/CompilePal](https://github.com/ruarai/CompilePal), rebuilt as a
 standalone GoldSrc-only compile tool. It works with any HLT-family compiler (Vluzacn's ZHLT,
-SDHLT, etc. - anything shipping `hlcsg.exe`/`hlbsp.exe`/`hlvis.exe`/`hlrad.exe`/`hlfix.exe` under
+SDHLT, etc. - anything shipping `hlcsg.exe`/`hlbsp.exe`/`hlvis.exe`/`hlrad.exe` under
 those standard names). It shares no identity, settings, telemetry, or update channel with the
 original CompilePal.
+
+## RMF conversion (no hlfix)
+
+There is no HLFIX step anymore. If the selected file is a **`.rmf`**, it is converted
+automatically to a `.map` of the same name in the same folder by a built-in clean-room
+converter (`CompilePalX/Compilers/RmfToMap.cs`, written from the format's documented
+structure only - no hlfix code), then compiled as usual. If the selected file is already
+a `.map`, conversion is skipped entirely and it compiles directly.
+
+Converter notes: the generated `.map` always carries `"mapversion" "220"` in worldspawn, because every face is written in Valve220 syntax (`[ ux uy uz shift ] [ vx vy vz shift ]`) and the compilers need that key to parse it; texture axes, shifts and scales are passed through from the `.rmf` unchanged. Editor-only data (visgroups, cameras) is not exported; groups are
+flattened the way the editor's own `.map` export treats them; all objects are exported
+regardless of visibility. No geometry repair is performed - if the tools reject the
+converted geometry, export a `.map` from the editor and compile that instead.
 
 ## Compile telemetry: Status + Statistics panels
 
@@ -21,7 +34,7 @@ Two panels (170px each, always open, docked to the right of the main window):
   of HLVIS/HLRAD reports a limits block most recently replaces what Statistics shows - it's a
   single current snapshot, not a running list.
 
-How it's wired: `CompileExecutable` (the base class HLFIX/HLCSG/HLBSP/HLVIS/HLRAD/COPY/GAME all
+How it's wired: `CompileExecutable` (the base class HLCSG/HLBSP/HLVIS/HLRAD/COPY/GAME all
 run through) accumulates its full captured stdout+stderr into a `RawOutput` buffer as it streams,
 alongside the existing live log display. `CompilingManager`'s per-step loop times each `Run()`
 call with a `Stopwatch`, checks that step's `CompileErrors` for anything `Error` severity or
@@ -36,41 +49,30 @@ this app already binds `OrderManager.CurrentOrder`. Cleared at the start of each
 RESGEN/PACK/SHUTDOWN/CUSTOM aren't `CompileExecutable`s (no captured stdout to parse), so they
 still get a Status entry but never touch Statistics - expected, not a bug.
 
-## HLFIX auto-skip
-
-If your input file is already a `.map` (TrenchBroom saves/exports directly to `.map`, no `.rmf`
-involved), HLFIX now skips itself automatically instead of running and failing with "input file
-can't be the same as output file" (since the intended output would be identical to the input in
-that case) - HLCSG onward already reads from the same file either way, so there's nothing lost.
-You'll see a one-line "Skipping HLFIX" log note instead of hlfix's usage text dumped into the
-compile log.
-
 ## Compile pipeline
 
-CompileGold's input is a **`.rmf`** (Hammer 3.x/J.A.C.K. native format), not a `.vmf` or `.map`.
-The pipeline is:
+CompileGold accepts a **`.rmf`** (Hammer 3.x/J.A.C.K. native format) or a **`.map`**. A `.rmf`
+is converted to a same-folder `.map` first (built in, automatic), a `.map` compiles
+directly. The pipeline is:
 
-1. **HLFIX** - runs `hlfix.exe` on the selected `.rmf`, writing a `.map` file next to it (via an
-   explicit `-o` flag, using hlfix's confirmed CLI syntax: `hlfix <mapname>[.rmf] -o <outfile>`)
-2. **HLCSG** (`hlcsg.exe`) - CSG stage
-3. **HLBSP** (`hlbsp.exe`) - BSP stage
-4. **HLVIS** (`hlvis.exe`) - VIS stage
-5. **HLRAD** (`hlrad.exe`) - lighting stage
-6. **COPY** - copies the compiled `.bsp` into your mod's `maps` folder
-7. **GAME** - launches `hl.exe` with the map
+1. **HLCSG** (`hlcsg.exe`) - CSG stage
+2. **HLBSP** (`hlbsp.exe`) - BSP stage
+3. **HLVIS** (`hlvis.exe`) - VIS stage
+4. **HLRAD** (`hlrad.exe`) - lighting stage
+5. **COPY** - copies the compiled `.bsp` into your mod's `maps` folder
+6. **GAME** - launches `hl.exe` with the map
 
-Steps 2-5 all compile the `.map` that HLFIX generated, not the original `.rmf` - the app works out
-that file's path (same name, same folder, `.map` extension) via a `$goldMapFile$` substitution
-token.
+All compile steps work from the `.map` - for a `.rmf` source that's the converted file
+(same name, same folder, `.map` extension, via the `$goldMapFile$` substitution token);
+for a `.map` source it's the selected file itself.
 
 Each tool's exe path is now built from a single dedicated substitution token
-(`$hlfixExe$`, `$hlcsgExe$`, `$hlbspExe$`, `$hlvisExe$`, `$hlradExe$` - each resolving to
+(`$hlcsgExe$`, `$hlbspExe$`, `$hlvisExe$`, `$hlradExe$` - each resolving to
 `Path.Combine(BinFolder, "<tool>.exe")`, quoted as one unit) rather than concatenating
 `$binFolder$` with a literal `\toolname.exe` suffix in each `meta.json`'s `Path` field. The
 earlier version of this fork had that concatenation, which broke the quoting whenever
 `BinFolder` needed quotes (e.g. contained spaces or an apostrophe) - the literal suffix ended up
-outside the quoted section, producing exactly the `"...\tools"\hlfix.exe` mangled path some users
-hit. Fixed now.
+outside the quoted section. Fixed now.
 
 Flags marked "SDHLT-specific" in the UI (`-worldextent`, `-nowadautodetect` in HLCSG;
 `-nofixprt` in HLVIS; `-pre25`, `-nostudioshadow`, and the whole `-ao*` ambient occlusion family
@@ -143,7 +145,7 @@ haven't been able to actually run the live swap to watch it repaint.
   them. That URL (`interlopers.net/includes/errorpage/errorChecker.txt`) is a Source Engine
   VBSP/VVIS/VRAD error database - it was the *only* thing populating error detection (no local
   fallback existed), which meant every pass/fail circle in the telemetry panel was running on a
-  database that could never match HLCSG/HLBSP/HLVIS/HLRAD/hlfix output in the first place, and
+  database that could never match HLCSG/HLBSP/HLVIS/HLRAD output in the first place, and
   the app was making a pointless network call to a Source-only site on every launch. Replaced
   with a small hand-picked local pattern set (`Error:`, `MAX_MAP_*` limit overflows, `Command
   line error`, wad-not-found, tool crashes as fatal; `Warning:`, leaks, fullbright as warnings) -
@@ -183,8 +185,8 @@ haven't been able to actually run the live swap to watch it repaint.
   zip put the `.res` in the wrong folder relative to the bsp, which breaks server-side resource
   downloading entirely. Fixed - both now sit under `maps/` inside the zip, matching where they
   land on disk outside the zip too (the mod's actual `maps` folder, not the source folder).
-- **`$vmfFile$` renamed to `$rmfFile$`** (HLFIX's only consumer) - a leftover name from the
-  Source Engine `.vmf` days that never made sense for a `.rmf`-based pipeline.
+- **`$vmfFile$` renamed to `$rmfFile$`** (kept only for backward compatibility) - a leftover
+  name from the Source Engine `.vmf` days that never made sense for a `.rmf`-based pipeline.
 
 ## Resource packaging (RESGEN / PACK)
 
@@ -272,7 +274,7 @@ then fill in:
 | Field          | Value |
 |----------------|-------|
 | Name           | e.g. `Half-Life` |
-| Bin Folder     | folder containing `hlcsg.exe`, `hlbsp.exe`, `hlvis.exe`, `hlrad.exe`, `hlfix.exe` |
+| Bin Folder     | folder containing `hlcsg.exe`, `hlbsp.exe`, `hlvis.exe`, `hlrad.exe` |
 | Game Folder    | your mod folder (e.g. `...\Half-Life\your_mod`) |
 | Game EXE       | path to `hl.exe` |
 | Map Folder     | the mod's `maps` folder (compiled `.bsp` gets copied here) |
@@ -282,7 +284,7 @@ If your tools use different filenames (e.g. `sdHLCSG.exe`, or `_x64` variants), 
 them to the plain names above, or edit the `$hl*Exe$` tokens in
 `CompilePalX/GameConfiguration/GameConfigurationManager.cs`.
 
-Then pick the **GoldSrc** preset before compiling a `.rmf`.
+Then pick the **GoldSrc** preset before compiling a `.rmf` or `.map`.
 
 ## Building
 

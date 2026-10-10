@@ -16,7 +16,7 @@ namespace CompilePalX
         /// <summary>
         /// CompilePal originally downloaded its known-error database from interlopers.net, a
         /// Source Engine mapping site - its patterns are for VBSP/VVIS/VRAD error text and will
-        /// never match HLCSG/HLBSP/HLVIS/HLRAD/hlfix output, so that fetch (and the network call
+        /// never match HLCSG/HLBSP/HLVIS/HLRAD output, so that fetch (and the network call
         /// it made on every launch) has no value for CompileGold. Errors/CompileErrors and the
         /// pass/fail state in the telemetry panel all depend on GetError() matching *something*,
         /// so this seeds a small local, hand-picked set of well-established HLT-family error and
@@ -50,7 +50,6 @@ namespace CompilePalX
             Add(@"Failed to run executable", ErrorSeverity.FatalError, "Could not launch the compile tool");
             Add(@"Unhandled Exception|Access Violation", ErrorSeverity.FatalError, "Tool crashed");
             Add(@"can'?t (open|find|load)\b.*\.wad", ErrorSeverity.FatalError, "Could not find a referenced WAD file");
-            Add(@"input file can'?t be the same as output file", ErrorSeverity.FatalError, "hlfix input/output collision");
 
             // warning - compile likely completed, but something is worth a mapper's attention
             Add(@"^Warning:|>>> WARNING", ErrorSeverity.Warning, "Compile warning");
