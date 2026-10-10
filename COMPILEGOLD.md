@@ -14,7 +14,7 @@ converter (`CompilePalX/Compilers/RmfToMap.cs`, written from the format's docume
 structure only - no hlfix code), then compiled as usual. If the selected file is already
 a `.map`, conversion is skipped entirely and it compiles directly.
 
-Converter notes: editor-only data (visgroups, cameras) is not exported; groups are
+Converter notes: the generated `.map` always carries `"mapversion" "220"` in worldspawn, because every face is written in Valve220 syntax (`[ ux uy uz shift ] [ vx vy vz shift ]`) and the compilers need that key to parse it; texture axes, shifts and scales are passed through from the `.rmf` unchanged. Editor-only data (visgroups, cameras) is not exported; groups are
 flattened the way the editor's own `.map` export treats them; all objects are exported
 regardless of visibility. No geometry repair is performed - if the tools reject the
 converted geometry, export a `.map` from the editor and compile that instead.

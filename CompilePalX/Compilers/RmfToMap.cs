@@ -379,11 +379,18 @@ namespace CompilePalX.Compilers
 
             sb.AppendLine("{");
             sb.AppendLine("\"classname\" \"" + Escape(doc.WorldClassName) + "\"");
+            // Every face below is written in Valve220 syntax ("[ ux uy uz shift ] [ vx vy vz shift ]").
+            // The HLT compilers only expect that syntax when worldspawn declares "mapversion" "220";
+            // without it the faces are read as the classic Quake format and the parse fails with
+            // "Parsing Entity 0, Brush 0, Side N : Expecting '(' got ']'". The .rmf never stores this key.
+            sb.AppendLine("\"mapversion\" \"220\"");
             bool hasWadKey = false;
             foreach (var kv in doc.WorldspawnKeyValues)
             {
                 if (string.Equals(kv.Key, "classname", StringComparison.OrdinalIgnoreCase))
                     continue;
+                if (string.Equals(kv.Key, "mapversion", StringComparison.OrdinalIgnoreCase))
+                    continue; // already written above, and it must match the face syntax we emit
                 if (string.Equals(kv.Key, "wad", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(kv.Value))
                     hasWadKey = true;
                 sb.AppendLine("\"" + Escape(kv.Key) + "\" \"" + Escape(kv.Value) + "\"");
