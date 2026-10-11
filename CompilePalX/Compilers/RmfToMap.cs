@@ -380,7 +380,7 @@ namespace CompilePalX.Compilers
                 Flatten(obj, worldBrushes, entities);
 
             sb.AppendLine("{");
-            sb.AppendLine("\"classname\" \"" + Escape(doc.WorldClassName) + "\"");
+            sb.AppendLine("\"classname\" \"" + Escape(doc.WorldClassName, result) + "\"");
             // Every face below is written in Valve220 syntax ("[ ux uy uz shift ] [ vx vy vz shift ]").
             // The HLT compilers only expect that syntax when worldspawn declares "mapversion" "220";
             // without it the faces are read as the classic Quake format and the parse fails with
@@ -395,7 +395,7 @@ namespace CompilePalX.Compilers
                     continue; // already written above, and it must match the face syntax we emit
                 if (string.Equals(kv.Key, "wad", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(kv.Value))
                     hasWadKey = true;
-                sb.AppendLine("\"" + Escape(kv.Key) + "\" \"" + Escape(kv.Value) + "\"");
+                sb.AppendLine("\"" + Escape(kv.Key, result) + "\" \"" + Escape(kv.Value, result) + "\"");
             }
             WriteSpawnFlags(sb, doc.WorldSpawnFlags, doc.WorldspawnKeyValues, result);
             if (!hasWadKey)
@@ -422,7 +422,9 @@ namespace CompilePalX.Compilers
             {
                 if (string.Equals(kv.Key, "spawnflags", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (kv.Value != flags.ToString(CultureInfo.InvariantCulture))
+                    int existing;
+                    bool same = int.TryParse((kv.Value ?? "").Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out existing) && existing == flags;
+                    if (!same)
                         Warn(result, "Entity has a \"spawnflags\" key/value (" + kv.Value + ") that differs from its stored flags (" + flags + "); kept the key/value.");
                     return;
                 }
@@ -478,7 +480,7 @@ namespace CompilePalX.Compilers
                 classname = "info_null";
                 Warn(result, "Found an entity with no classname, written as info_null.");
             }
-            sb.AppendLine("\"classname\" \"" + Escape(classname) + "\"");
+            sb.AppendLine("\"classname\" \"" + Escape(classname, result) + "\"");
 
             foreach (var kv in entity.KeyValues)
             {
@@ -486,7 +488,7 @@ namespace CompilePalX.Compilers
                     continue;
                 if (string.Equals(kv.Key, "origin", StringComparison.OrdinalIgnoreCase) && entity.Brushes.Count > 0)
                     continue;
-                sb.AppendLine("\"" + Escape(kv.Key) + "\" \"" + Escape(kv.Value) + "\"");
+                sb.AppendLine("\"" + Escape(kv.Key, result) + "\" \"" + Escape(kv.Value, result) + "\"");
             }
 
             WriteSpawnFlags(sb, entity.SpawnFlags, entity.KeyValues, result);
@@ -619,11 +621,16 @@ namespace CompilePalX.Compilers
             return sb.ToString();
         }
 
-        private static string Escape(string value)
+        private static string Escape(string value, ConvertResult result)
         {
             if (value == null)
                 return "";
-            return value.Replace("\r", " ").Replace("\n", " ").Replace((char)34, (char)39);
+            string escaped = value.Replace("\r", " ").Replace("\n", " ").Replace((char)34, (char)39);
+            // The .map format has no way to escape a quote or hold a line break inside a value,
+            // so these are replaced, which changes the text. Say so instead of doing it silently.
+            if (escaped != value)
+                Warn(result, "A key or value contained a double quote or line break, which the .map format cannot hold; it was replaced with a single quote or space: " + escaped);
+            return escaped;
         }
 
         private static string F(float value)
