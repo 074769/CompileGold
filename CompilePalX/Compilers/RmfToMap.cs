@@ -98,6 +98,7 @@ namespace CompilePalX.Compilers
         private sealed class RmfEntity
         {
             public string ClassName = "";
+            public int SpawnFlags;
             public List<KeyValuePair<string, string>> KeyValues = new List<KeyValuePair<string, string>>();
             public List<RmfSolid> Brushes = new List<RmfSolid>();
             public float[] Origin = new float[3];
@@ -131,6 +132,7 @@ namespace CompilePalX.Compilers
         {
             public List<RmfObject> WorldObjects = new List<RmfObject>();
             public string WorldClassName = "worldspawn";
+            public int WorldSpawnFlags;
             public List<KeyValuePair<string, string>> WorldspawnKeyValues = new List<KeyValuePair<string, string>>();
             public List<RmfPath> Paths = new List<RmfPath>();
         }
@@ -167,7 +169,7 @@ namespace CompilePalX.Compilers
                 if (string.IsNullOrWhiteSpace(doc.WorldClassName))
                     doc.WorldClassName = "worldspawn";
                 br.BaseStream.Seek(4, SeekOrigin.Current); // unused
-                br.ReadInt32(); // worldspawn flags
+                doc.WorldSpawnFlags = br.ReadInt32(); // worldspawn flags
                 doc.WorldspawnKeyValues = ReadKeyValues(br);
                 br.BaseStream.Seek(12, SeekOrigin.Current);
 
@@ -272,7 +274,7 @@ namespace CompilePalX.Compilers
 
             entity.ClassName = ReadNString(br);
             br.BaseStream.Seek(4, SeekOrigin.Current);
-            br.ReadInt32();
+            entity.SpawnFlags = br.ReadInt32(); // entity flags = spawnflags; RMF keeps them out of the key/values
             entity.KeyValues = ReadKeyValues(br);
             br.BaseStream.Seek(14, SeekOrigin.Current);
             entity.Origin = ReadVector(br);
@@ -395,6 +397,7 @@ namespace CompilePalX.Compilers
                     hasWadKey = true;
                 sb.AppendLine("\"" + Escape(kv.Key) + "\" \"" + Escape(kv.Value) + "\"");
             }
+            WriteSpawnFlags(sb, doc.WorldSpawnFlags, doc.WorldspawnKeyValues, result);
             if (!hasWadKey)
                 Warn(result, "Worldspawn has no \"wad\" key (the .rmf does not store one) - HLCSG will only look for textures in its own WAD configuration; any texture outside it fails with a LoadLump error. Either add the WADs to HLCSG's config or add a \"wad\" key to worldspawn in the editor before saving the .rmf.");
             foreach (var solid in worldBrushes)
@@ -407,6 +410,24 @@ namespace CompilePalX.Compilers
             WritePaths(sb, doc, result);
 
             return sb.ToString();
+        }
+
+        // The .rmf stores spawnflags in the entity's flags field, not in its key/values, so write
+        // them out explicitly. A "spawnflags" key/value that is already present is left alone.
+        private static void WriteSpawnFlags(StringBuilder sb, int flags, List<KeyValuePair<string, string>> keyValues, ConvertResult result)
+        {
+            if (flags == 0)
+                return;
+            foreach (var kv in keyValues)
+            {
+                if (string.Equals(kv.Key, "spawnflags", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (kv.Value != flags.ToString(CultureInfo.InvariantCulture))
+                        Warn(result, "Entity has a \"spawnflags\" key/value (" + kv.Value + ") that differs from its stored flags (" + flags + "); kept the key/value.");
+                    return;
+                }
+            }
+            sb.AppendLine("\"spawnflags\" \"" + flags.ToString(CultureInfo.InvariantCulture) + "\"");
         }
 
         private static void Flatten(RmfObject obj, List<RmfSolid> brushes, List<RmfEntity> entities)
@@ -467,6 +488,8 @@ namespace CompilePalX.Compilers
                     continue;
                 sb.AppendLine("\"" + Escape(kv.Key) + "\" \"" + Escape(kv.Value) + "\"");
             }
+
+            WriteSpawnFlags(sb, entity.SpawnFlags, entity.KeyValues, result);
 
             if (entity.Brushes.Count == 0)
                 sb.AppendLine("\"origin\" \"" + F(entity.Origin[0]) + " " + F(entity.Origin[1]) + " " + F(entity.Origin[2]) + "\"");
