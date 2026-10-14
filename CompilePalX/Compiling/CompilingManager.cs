@@ -83,20 +83,35 @@ namespace CompilePalX
         {
             CompilePalLogger.OnErrorFound += CompilePalLogger_OnErrorFound;
         }
+
+        // True while the postCompile summary is re-logging errors. Those LogCompileError
+        // calls raise OnErrorFound again - they must not trigger a nested CancelCompile.
+        private static bool isWritingSummary;
+        // Guards CancelCompile/postCompile so error-cancel, manual cancel and the
+        // background thread can't run cleanup twice (double OnFinish / double summary).
+        private static int cancelState; // 0 = running, 1 = cancelling/finished
+        private static readonly object stateLock = new object();
             
         private static void CompilePalLogger_OnErrorFound(Error e)
         {
-            currentCompileProcess.CompileErrors.Add(e);
+            currentCompileProcess?.CompileErrors?.Add(e);
 
-            if (e.Severity == 5 && IsCompiling)
+            if (e.Severity >= (int)ErrorSeverity.Error && IsCompiling && !isWritingSummary)
             {
-                //We're currently in the thread we would like to kill, so make sure we invoke from the window thread to do this.
-                MainWindow.ActiveDispatcher.Invoke(() =>
+                // Kill the running tool right away so the compile actually stops even if
+                // the background thread is blocked reading output. CancelCompile then
+                // flips shared state and resets the button via OnFinish.
+                try { currentCompileProcess?.Cancel(); } catch { }
+                try { cts?.Cancel(); } catch { }
+                // Run on the window thread (the caller is usually the background compile
+                // thread) but don't block it: a blocking Invoke here can deadlock against
+                // a UI thread that is itself waiting on the compile.
+                MainWindow.ActiveDispatcher?.BeginInvoke(new Action(() =>
                 {
                     CompilePalLogger.LogLineColor("An error cancelled the compile.", Error.GetSeverityBrush(5));
                     CancelCompile();
                     ProgressManager.ErrorProgress();
-                });
+                }));
             }
         }
 
@@ -121,7 +136,10 @@ namespace CompilePalX
 
         public static void StartCompile()
         {
-            OnStart();
+            lock (stateLock) { cancelState = 0; }
+            isWritingSummary = false;
+
+            OnStart?.Invoke();
 
             // Tells windows to not go to sleep during compile
             NativeMethods.SetThreadExecutionState(NativeMethods.ES_CONTINUOUS | NativeMethods.ES_SYSTEM_REQUIRED);
@@ -130,10 +148,11 @@ namespace CompilePalX
 
             IsCompiling = true;
 
-            compileTimeStopwatch.Start();
+            compileTimeStopwatch.Restart();
 
-            OnClear();
+            OnClear?.Invoke();
 
+            try { cts?.Dispose(); } catch { }
             cts = new CancellationTokenSource();
             Task.Run(() => CompileThreaded(cts.Token));
         }
@@ -261,54 +280,112 @@ namespace CompilePalX
                     GameConfigurationManager.RestoreCurrentContext();
                 }
 
-                if (!cancellationToken.IsCancellationRequested)
-                    MainWindow.ActiveDispatcher.Invoke(() => postCompile(mapErrors));
+                if (!cancellationToken.IsCancellationRequested && TryMarkFinished())
+                    MainWindow.ActiveDispatcher?.Invoke(() => postCompile(mapErrors));
             }
-            catch (OperationCanceledException) { ProgressManager.ErrorProgress(); }
+            catch (OperationCanceledException)
+            {
+                // The run was cancelled (manually or by a fatal error): CancelCompile
+                // already ran cleanup and reset the button. Just make sure the UI
+                // reflects the cancelled state.
+                if (TryMarkFinished())
+                    // OnFinish touches WPF controls, so marshal to the UI thread.
+                    MainWindow.ActiveDispatcher?.Invoke((Action)FinishCancelledState);
+                ProgressManager.ErrorProgress();
+            }
+            catch (Exception ex)
+            {
+                // Any unexpected failure must still stop the run and reset the button
+                // instead of leaving Compile/Cancel stuck.
+                CompilePalLogger.LogLineDebug($"Compile thread failed: {ex}");
+                try { cts?.Cancel(); } catch { }
+                try { currentCompileProcess?.Cancel(); } catch { }
+                if (TryMarkFinished())
+                    MainWindow.ActiveDispatcher?.Invoke(() => postCompile(mapErrors));
+            }
+        }
+
+        private static bool TryMarkFinished()
+        {
+            lock (stateLock)
+            {
+                if (cancelState != 0)
+                    return false;
+                cancelState = 1;
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Resets shared state when the compile thread itself observes cancellation
+        /// (CancelCompile ran on another thread or never ran). Never re-logs the
+        /// collected errors - that would re-trigger OnErrorFound and recurse.
+        /// </summary>
+        private static void FinishCancelledState()
+        {
+            IsCompiling = false;
+            try { compileTimeStopwatch.Reset(); } catch { }
+            try { ProgressManager.SetProgress(0); } catch { }
+            try { ProgressManager.ErrorProgress(); } catch { }
+            try { NativeMethods.SetThreadExecutionState(NativeMethods.ES_CONTINUOUS); } catch { }
+            OnFinish?.Invoke();
         }
 
         private static void postCompile(List<MapErrors> errors)
         {
-            CompilePalLogger.LogLineColor(
-	            $"'{ConfigurationManager.CurrentPreset!.Name}' compile finished in {compileTimeStopwatch.Elapsed.ToString(@"hh\:mm\:ss")}", (Brush) Application.Current.TryFindResource("CompilePal.Brushes.Success"));
-
-            if (errors != null && errors.Any())
+            // postCompile owns the single finish transition: the background thread only
+            // calls it after winning TryMarkFinished, and CancelCompile (below) claims
+            // the same guard, so the summary / OnFinish / button reset run exactly once.
+            TryMarkFinished();
+            isWritingSummary = true;
+            try
             {
-                int numErrors = errors.Sum(e => e.Errors.Count);
-                int maxSeverity = errors.Max(e => e.Errors.Any() ? e.Errors.Max(e2 => e2.Severity) : 0);
-                CompilePalLogger.LogLineColor("{0} errors/warnings logged:", Error.GetSeverityBrush(maxSeverity), numErrors);
+                string presetName = ConfigurationManager.CurrentPreset?.Name ?? "Unknown";
+                CompilePalLogger.LogLineColor(
+                    $"'{presetName}' compile finished in {compileTimeStopwatch.Elapsed.ToString(@"hh\:mm\:ss")}", (Brush)Application.Current.TryFindResource("CompilePal.Brushes.Success"));
 
-                foreach (var map in errors)
+                if (errors != null && errors.Any())
                 {
-                    CompilePalLogger.Log("  ");
+                    int numErrors = errors.Sum(e => e.Errors.Count);
+                    int maxSeverity = errors.Max(e => e.Errors.Any() ? e.Errors.Max(e2 => e2.Severity) : 0);
+                    CompilePalLogger.LogLineColor("{0} errors/warnings logged:", Error.GetSeverityBrush(maxSeverity), numErrors);
 
-                    if (!map.Errors.Any())
+                    foreach (var map in errors)
                     {
-                        CompilePalLogger.LogLineColor("No errors/warnings logged for {0}", Error.GetSeverityBrush(0), map.MapName);
-                        continue;
-                    }
+                        CompilePalLogger.Log("  ");
 
-                    int mapMaxSeverity = map.Errors.Max(e => e.Severity);
-                    CompilePalLogger.LogLineColor("{0} errors/warnings logged for {1}:", Error.GetSeverityBrush(mapMaxSeverity), map.Errors.Count, map.MapName);
+                        if (!map.Errors.Any())
+                        {
+                            CompilePalLogger.LogLineColor("No errors/warnings logged for {0}", Error.GetSeverityBrush(0), map.MapName);
+                            continue;
+                        }
 
-                    var distinctErrors = map.Errors.GroupBy(e => e.ID).OrderBy(e => e.First().Severity);
-                    foreach (var errorList in distinctErrors)
-                    {
-                        var error = errorList.First();
+                        int mapMaxSeverity = map.Errors.Max(e => e.Severity);
+                        CompilePalLogger.LogLineColor("{0} errors/warnings logged for {1}:", Error.GetSeverityBrush(mapMaxSeverity), map.Errors.Count, map.MapName);
 
-                        string errorText = $"{errorList.Count()}x: {error.SeverityText}: {error.ShortDescription}";
+                        var distinctErrors = map.Errors.GroupBy(e => e.ID).OrderBy(e => e.First().Severity);
+                        foreach (var errorList in distinctErrors)
+                        {
+                            var error = errorList.First();
 
-                        CompilePalLogger.Log("    ● ");
-                        CompilePalLogger.LogCompileError(errorText, error);
-                        CompilePalLogger.LogLine();
+                            string errorText = $"{errorList.Count()}x: {error.SeverityText}: {error.ShortDescription}";
 
-                        if (error.Severity >= 3)
-                            AnalyticsManager.CompileError();
+                            CompilePalLogger.Log("    ● ");
+                            CompilePalLogger.LogCompileError(errorText, error);
+                            CompilePalLogger.LogLine();
+
+                            if (error.Severity >= 3)
+                                AnalyticsManager.CompileError();
+                        }
                     }
                 }
             }
+            finally
+            {
+                isWritingSummary = false;
+            }
 
-            OnFinish();
+            OnFinish?.Invoke();
 
             compileTimeStopwatch.Reset();
 
@@ -320,9 +397,15 @@ namespace CompilePalX
 
         public static void CancelCompile()
         {
+            // Only the first caller performs cleanup so a manual click racing the
+            // fatal-error auto-cancel can't double-run postCompile / OnFinish.
+            if (!TryMarkFinished())
+                return;
+
             try
             {
-                cts.Cancel();
+                try { currentCompileProcess?.Cancel(); } catch { }
+                cts?.Cancel();
             }
             catch
             {
