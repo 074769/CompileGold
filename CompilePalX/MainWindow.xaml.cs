@@ -970,7 +970,10 @@ namespace CompilePalX
         {
             CompilingManager.ToggleCompileState();
 
-            CompileStartStopButton.Content = (string)CompileStartStopButton.Content == "Compile" ? "Cancel" : "Compile";
+            // Don't flip optimistically: with IsCompiling already cleared on the
+            // error/cancel path, this toggle would set the label back to "Cancel"
+            // after OnFinish already reset it to "Compile", leaving a dead button.
+            CompileStartStopButton.Content = CompilingManager.IsCompiling ? "Cancel" : "Compile";
 
             OutputTab.Focus();
         }

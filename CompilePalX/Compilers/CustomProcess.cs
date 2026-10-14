@@ -47,14 +47,15 @@ namespace CompilePalX.Compilers
 
 	class CustomProgram : CompileProcess
 	{
-		public new Process Process { get; set; }
+		public new Process? Process { get; set; }
 
 		public new string Name { get; set; }
+
 		public new string Description { get; set; }
 
 		public string Path { get; set; }
 
-		public ProcessStartInfo StartInfo { get; set; }
+		public ProcessStartInfo? StartInfo { get; set; }
 
 		public string Args { get; }
 
@@ -142,7 +143,7 @@ namespace CompilePalX.Compilers
             {
                 try
                 {
-                    if (ReadOutput)
+                    if (ReadOutput && Process != null)
                     {
                         Process.OutputDataReceived -= ProcessOnOutputDataReceived;
                         Process.ErrorDataReceived -= ProcessOnErrorDataReceived;
@@ -161,11 +162,10 @@ namespace CompilePalX.Compilers
                 };
 
                 Process.Start();
-                Process.BeginOutputReadLine();
-                Process.BeginErrorReadLine();
-
                 if (ReadOutput)
                 {
+                    Process.BeginOutputReadLine();
+                    Process.BeginErrorReadLine();
                     Process.OutputDataReceived += ProcessOnOutputDataReceived;
                     Process.ErrorDataReceived += ProcessOnErrorDataReceived;
                 }
@@ -195,6 +195,22 @@ namespace CompilePalX.Compilers
 				CompilePalLogger.LogCompileError(e.ToString(), new Error(e.ToString(), ErrorSeverity.Error));
             }
 		}
+
+		public override void Cancel()
+		{
+			// CustomProgram hides CompileProcess.Process with its own instance, so the
+			// base Cancel() would kill the wrong (null) process and leave the tool
+			// running after a fatal error / manual stop.
+			try
+			{
+				if (Process is null)
+					return;
+				try { if (Process.Id == 0 || Process.HasExited) return; } catch { return; }
+				Process.Kill();
+			}
+			catch { }
+		}
+
 
 		private void ProcessOnErrorDataReceived(object sender, DataReceivedEventArgs e)
 		{
