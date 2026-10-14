@@ -161,11 +161,11 @@ namespace CompilePalX
 
         private static void CompileThreaded(CancellationToken cancellationToken)
         {
+            var mapErrors = new List<MapErrors>();
+
             try
             {
                 ProgressManager.SetProgress(0);
-
-                var mapErrors = new List<MapErrors>();
 
 
                 foreach (Map map in MapFiles)
