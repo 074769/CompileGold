@@ -10,7 +10,6 @@
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <SelfContained>False</SelfContained>
     <DebugType>none</DebugType>
-    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <PlatformName>windows</PlatformName>
   </PropertyGroup>
   <PropertyGroup>
