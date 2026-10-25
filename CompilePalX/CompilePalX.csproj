@@ -8,8 +8,9 @@
     <UseWPF>True</UseWPF>
     <RuntimeIdentifier>win-x86</RuntimeIdentifier>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-    <SelfContained>True</SelfContained>
-    <DebugType>embedded</DebugType>
+    <SelfContained>False</SelfContained>
+    <DebugType>none</DebugType>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <PlatformName>windows</PlatformName>
   </PropertyGroup>
   <PropertyGroup>
@@ -38,7 +39,7 @@
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="10.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="MahApps.Metro" Version="2.4.11" />
-    <PackageReference Include="MahApps.Metro.IconPacks" Version="6.2.1" />
+    <PackageReference Include="MahApps.Metro.IconPacks.Material" Version="6.2.1" />
     <PackageReference Include="ValveKeyValue" Version="0.20.0.417" />
   </ItemGroup>
   <ItemGroup>
