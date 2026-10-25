@@ -1,7 +1,7 @@
 name: 'Build (manual/push)'
 
 # Builds on every push to any branch, and can also be triggered manually
-# from the Actions tab. Produces a downloadable artifact — no GitHub
+# from the Actions tab. Produces downloadable artifacts (x86 and x64) — no GitHub
 # release needed, unlike build_release.yml.
 on:
   push:
@@ -21,16 +21,22 @@ jobs:
       - name: Restore
         run: dotnet restore
 
-      - name: Build & publish
-        run: dotnet publish /p:PublishProfile=PublishRelease
+      - name: Build & publish (x86)
+        run: dotnet publish /p:PublishProfile=PublishRelease-x86
 
-      - name: Zip the build
+      - name: Build & publish (x64)
+        run: dotnet publish /p:PublishProfile=PublishRelease-x64
+
+      - name: Zip the builds
         run: |
-          Compress-Archive -Path "./CompilePalX/bin/Release/Deploy/*" -DestinationPath "./CompilePal-GoldSrc-SDHLT.zip"
+          Compress-Archive -Path "./CompilePalX/bin/Release/Deploy-x86/*" -DestinationPath "./CompilePal-GoldSrc-SDHLT-x86.zip"
+          Compress-Archive -Path "./CompilePalX/bin/Release/Deploy-x64/*" -DestinationPath "./CompilePal-GoldSrc-SDHLT-x64.zip"
 
-      - name: Upload artifact
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: CompilePal-GoldSrc-SDHLT
-          path: CompilePal-GoldSrc-SDHLT.zip
+          path: |
+            CompilePal-GoldSrc-SDHLT-x86.zip
+            CompilePal-GoldSrc-SDHLT-x64.zip
           retention-days: 30

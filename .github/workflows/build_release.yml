@@ -45,36 +45,48 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
       
-      - name: Build Compile Pal
-        run: dotnet publish /p:PublishProfile=Publish${{ env.CONFIGURATION }}
+      - name: Build Compile Pal (x86)
+        run: dotnet publish /p:PublishProfile=Publish${{ env.CONFIGURATION }}-x86
+
+      - name: Build Compile Pal (x64)
+        run: dotnet publish /p:PublishProfile=Publish${{ env.CONFIGURATION }}-x64
       
-      # Package Compile Pal into zip file
+      # Package Compile Pal into zip files (one per architecture)
       - name: Package Compile Pal
         run: |
-          Rename-Item -Path "./CompilePalX/bin/${{ env.CONFIGURATION }}/Deploy" -NewName "Compile Pal ${{ env.VERSION }}"
-          
-          $compress = @{
-            Path = "./CompilePalX/bin/${{ env.CONFIGURATION }}/Compile Pal ${{ env.VERSION }}"
-            CompressionLevel = "Optimal"
-            DestinationPath = "./Compile Pal ${{ env.VERSION }}.zip"
+          foreach ($arch in @("x86", "x64")) {
+            $name = "Compile Pal ${{ env.VERSION }} $arch"
+            Rename-Item -Path "./CompilePalX/bin/${{ env.CONFIGURATION }}/Deploy-$arch" -NewName $name
+
+            $compress = @{
+              Path = "./CompilePalX/bin/${{ env.CONFIGURATION }}/$name"
+              CompressionLevel = "Optimal"
+              DestinationPath = "./$name.zip"
+            }
+            Compress-Archive @compress
           }
-          Compress-Archive @compress
-      
-      # Uploads Compile Pal build artifact to the release
-      - name: Upload Release Asset
+
+      # Uploads Compile Pal build artifacts to the release
+      - name: Upload Release Asset (x86)
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          # The URL for uploading assets to the release
           upload_url: ${{ github.event.release.upload_url }}
-          # The path to the asset you want to upload
-          asset_path: ./Compile Pal ${{ env.VERSION }}.zip
-          # The name of the asset you want to upload
-          asset_name: Compile Pal ${{ env.VERSION }}.zip
-          # The content-type of the asset you want to upload. See the supported Media Types here: https://www.iana.org/assignments/media-types/media-types.xhtml for more information
+          asset_path: ./Compile Pal ${{ env.VERSION }} x86.zip
+          asset_name: Compile Pal ${{ env.VERSION }} x86.zip
           asset_content_type: application/zip
-          
+
+      - name: Upload Release Asset (x64)
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./Compile Pal ${{ env.VERSION }} x64.zip
+          asset_name: Compile Pal ${{ env.VERSION }} x64.zip
+          asset_content_type: application/zip
+
       # Updates version.txt on Github
       - name: Update version.txt on GitHub
         uses: test-room-7/action-update-file@v1.4.0
