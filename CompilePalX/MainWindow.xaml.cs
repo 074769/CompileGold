@@ -604,8 +604,7 @@ namespace CompilePalX
 
             SetSources();
             CompileProcessesListBox.SelectedIndex = 0;
-            PresetConfigListBox.SelectedItem = ConfigurationManager.KnownPresets
-                .FirstOrDefault(p => p.Name == preset.Name && p.Map == preset.Map && p.MapRegex == preset.MapRegex);
+            PresetConfigListBox.SelectedItem = preset;
         }
         private void ClonePresetButton_OnClick(object sender, RoutedEventArgs e)
         {
@@ -628,8 +627,7 @@ namespace CompilePalX
 
             SetSources();
             CompileProcessesListBox.SelectedIndex = 0;
-            PresetConfigListBox.SelectedItem = ConfigurationManager.KnownPresets
-                .FirstOrDefault(p => p.Name == preset.Name && p.Map == preset.Map && p.MapRegex == preset.MapRegex);
+            PresetConfigListBox.SelectedItem = preset;
         }
 
         private void EditPresetButton_OnClick(object sender, RoutedEventArgs e)
@@ -651,16 +649,14 @@ namespace CompilePalX
 
             SetSources();
             CompileProcessesListBox.SelectedIndex = 0;
-            var selected = ConfigurationManager.KnownPresets
-                .FirstOrDefault(p => p.Name == preset.Name && p.Map == preset.Map && p.MapRegex == preset.MapRegex);
-            PresetConfigListBox.SelectedItem = selected;
+            PresetConfigListBox.SelectedItem = preset;
 
             // update all maps referencing the unedited preset to be the new one
             for (int i = 0; i < MapListBox.Items.Count; i++)
             {
                 var map = MapListBox.Items[i] as Map;
                 if (map.Preset != null && map.Preset.Equals(selectedPreset))
-                    map.Preset = selected;
+                    map.Preset = preset;
             }
 
         }

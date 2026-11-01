@@ -48,13 +48,32 @@ namespace CompilePalX
             Order = order;
         }
     }
-    public class Preset : ICloneable
+    public class Preset : IEquatable<Preset>, ICloneable
     {
         public required string Name { get; set; }
         public string? Map { get; set; }
         public string? MapRegex { get; set; }
         public Dictionary<string, List<PresetProcessParameter>> Processes { get; set; } = [];
 
+        public bool Equals(Preset? other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Name == other.Name && MapRegex == other.MapRegex && Map == other.Map;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Preset)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name, MapRegex, Map);
+        }
         public object Clone()
         {
             return this.MemberwiseClone();
@@ -404,14 +423,9 @@ namespace CompilePalX
             RemovePreset(CurrentPreset);
             var newPreset = NewPreset(preset, false);
 
-            // NewPreset reloads KnownPresets from disk, so the returned `newPreset` is a stale
-            // reference. Point CurrentPreset at the freshly-loaded instance so that
-            // PresetDictionary lookups (reference-keyed) resolve correctly.
-            CurrentPreset = KnownPresets.FirstOrDefault(
-                p => p.Name == newPreset.Name && p.Map == newPreset.Map && p.MapRegex == newPreset.MapRegex)
-                ?? newPreset;
+            CurrentPreset = newPreset;
 
-            return CurrentPreset;
+            return newPreset;
         }
 
         private static string GetPresetFolder(Preset preset)
