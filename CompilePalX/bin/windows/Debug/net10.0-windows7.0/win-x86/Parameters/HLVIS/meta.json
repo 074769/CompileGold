@@ -1,0 +1,13 @@
+{
+  "Name": "HLVIS",
+  "Path": "$hlvisExe$",
+  "Order": 1.3,
+  "DoRun": true,
+  "ReadOutput": true,
+  "Description": "HLT VIS stage. Computes potentially visible sets for the map (GoldSrc equivalent of VVIS).",
+  "Warning": "",
+  "PresetDefault": false,
+  "BasisString": " $goldMapFile$",
+  "CheckExitCode": false,
+  "WorkingDirectory": "$binFolder$"
+}

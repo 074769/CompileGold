@@ -503,6 +503,17 @@ namespace CompilePalX
         private void OnConfigChanged(object sender, RoutedEventArgs e)
         {
             UpdateParameterTextBox();
+            SaveCurrentPreset();
+        }
+
+        /// <summary>
+        /// Persists the currently selected preset's live parameter changes to disk so they
+        /// survive an AssembleParameters() reload and are not shared/lost across presets.
+        /// </summary>
+        private void SaveCurrentPreset()
+        {
+            if (ConfigurationManager.CurrentPreset is not null)
+                ConfigurationManager.SavePreset(ConfigurationManager.CurrentPreset);
         }
 
         private void AddParameterButton_Click(object sender, RoutedEventArgs e)
@@ -524,6 +535,8 @@ namespace CompilePalX
                 AnalyticsManager.ModifyPreset();
 
                 UpdateParameterTextBox();
+
+                SaveCurrentPreset();
             }
         }
 
@@ -539,6 +552,7 @@ namespace CompilePalX
                 selectedProcess.PresetDictionary[ConfigurationManager.CurrentPreset].Remove(selectedItem);
 
             UpdateParameterTextBox();
+            SaveCurrentPreset();
         }
         private void AddCustomParameterButton_Click(object sender, RoutedEventArgs e)
         {
@@ -550,6 +564,7 @@ namespace CompilePalX
             AnalyticsManager.ModifyPreset();
 
             UpdateParameterTextBox();
+            SaveCurrentPreset();
         }
 
         private void AddProcessButton_Click(object sender, RoutedEventArgs e)

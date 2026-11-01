@@ -1,0 +1,28 @@
+[
+  {
+    "Name": "Extra File",
+    "Parameter": "extra",
+    "Description": "An additional relative path (e.g. sound/custom/mysound.wav) to always include, for dependencies the automatic scan can't find (referenced only through custom entity keys, dynamically loaded, etc.).",
+    "Value": null,
+    "CanHaveValue": true,
+    "CanBeUsedMoreThanOnce": true,
+    "Warning": ""
+  },
+  {
+    "Name": "Skip Base Game Fallback",
+    "Parameter": "novalvefallback",
+    "Description": "Don't search the base game's shared content folder (the sibling of your mod folder, e.g. 'valve' next to 'your_mod') for dependencies not found in your mod folder.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": ""
+  },
+  {
+    "Name": "Verbose Scan Log",
+    "Parameter": "verbose",
+    "Description": "Log every entity key/value pair and file the scan considers, not just what it included or couldn't find.",
+    "Value": null,
+    "CanHaveValue": false,
+    "Warning": "",
+    "IsDebug": true
+  }
+]

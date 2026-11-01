@@ -1,0 +1,15 @@
+{
+  "Name": "GoldSrc",
+  "Map": null,
+  "MapRegex": null,
+  "Processes": {
+    "HLCSG": [ { "Name": "Chart" } ],
+    "HLBSP": [ { "Name": "Chart" } ],
+    "HLVIS": [ { "Name": "Chart" } ],
+    "HLRAD": [ { "Name": "Chart" } ],
+    "RESGEN": [],
+    "PACK": [],
+    "COPY": [],
+    "GAME": []
+  }
+}
