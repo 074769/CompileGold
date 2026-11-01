@@ -410,6 +410,14 @@ namespace CompilePalX
             }
 
             AssembleParameters();
+            // Point the active preset at the one we just created, so the UI and
+            // ParameterAdder edit THIS preset's own PresetDictionary, not a
+            // previously-loaded preset's collection.
+            var fresh = KnownPresets.FirstOrDefault(
+                p => p.Name == preset.Name && p.Map == preset.Map && p.MapRegex == preset.MapRegex);
+            if (fresh != null)
+                CurrentPreset = fresh;
+
             return preset;
         }
         public static Preset? ClonePreset(Preset preset)
@@ -430,6 +438,20 @@ namespace CompilePalX
                 Directory.CreateDirectory(newFolder);
                 SavePreset(preset);
                 AssembleParameters();
+
+                // Point the active preset at the one we just cloned, so the UI /
+                // ParameterAdder edits THIS preset's own PresetDictionary, not a
+                // previously-loaded preset's collection.
+                var fresh = KnownPresets.FirstOrDefault(
+                    p => p.Name == preset.Name && p.Map == preset.Map && p.MapRegex == preset.MapRegex);
+                if (fresh != null)
+                    CurrentPreset = fresh;
+            }
+
+            return preset;
+        }
+
+        public static Preset? ClonePreset(Preset preset)
             }
 
             return preset;
