@@ -47,6 +47,16 @@ namespace CompilePalX
             WaitForExit = waitForExit;
             Order = order;
         }
+
+        public PresetProcessParameter(PresetProcessParameter other)
+        {
+            Name = other.Name;
+            Value = other.Value;
+            Value2 = other.Value2;
+            ReadOutput = other.ReadOutput;
+            WaitForExit = other.WaitForExit;
+            Order = other.Order;
+        }
     }
     public class Preset : IEquatable<Preset>, ICloneable
     {
@@ -76,7 +86,16 @@ namespace CompilePalX
         }
         public object Clone()
         {
-            return this.MemberwiseClone();
+            var clone = (Preset)this.MemberwiseClone();
+            clone.Processes = new Dictionary<string, List<PresetProcessParameter>>(this.Processes.Count);
+            foreach (var kvp in this.Processes)
+            {
+                var list = new List<PresetProcessParameter>(kvp.Value.Count);
+                foreach (var parameter in kvp.Value)
+                    list.Add(new PresetProcessParameter(parameter));
+                clone.Processes[kvp.Key] = list;
+            }
+            return clone;
         }
 
         /// <summary>
@@ -339,6 +358,19 @@ namespace CompilePalX
             File.WriteAllText(metadataPath, jsonSaveText);
         }
 
+        private static Dictionary<string, List<PresetProcessParameter>> CloneProcesses(Dictionary<string, List<PresetProcessParameter>> source)
+        {
+            var destination = new Dictionary<string, List<PresetProcessParameter>>(source.Count);
+            foreach (var kvp in source)
+            {
+                var list = new List<PresetProcessParameter>(kvp.Value.Count);
+                foreach (var parameter in kvp.Value)
+                    list.Add(new PresetProcessParameter(parameter));
+                destination[kvp.Key] = list;
+            }
+            return destination;
+        }
+
         public static void SaveProcesses()
         {
             foreach (var process in CompileProcesses)
@@ -391,7 +423,7 @@ namespace CompilePalX
             // if cloned preset is map specific, append map to name
             string oldFolder = GetPresetFolder(CurrentPreset);
 
-            preset.Processes = CurrentPreset.Processes;
+            preset.Processes = CloneProcesses(CurrentPreset.Processes);
 
             if (!Directory.Exists(newFolder))
             {
@@ -410,8 +442,8 @@ namespace CompilePalX
                 return null;
             }
 
-            // copy processes
-            preset.Processes = CurrentPreset.Processes;
+            // copy processes (deep copy so the cloned/edited preset doesn't share parameter lists with the one being replaced)
+            preset.Processes = CloneProcesses(CurrentPreset.Processes);
 
             // TODO: this can be improved, deleting and recreating isn't really neccessary now that all preset info is consolidated into one file
             // "Edit" preset by deleting the current preset and adding a new preset, then make it the currently selected preset
