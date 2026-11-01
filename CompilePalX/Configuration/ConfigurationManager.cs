@@ -391,10 +391,7 @@ namespace CompilePalX
             // if cloned preset is map specific, append map to name
             string oldFolder = GetPresetFolder(CurrentPreset);
 
-            // deep-copy the processes so the clone owns its own independent
-            // process/parameter data instead of sharing CurrentPreset's dictionary
-            preset.Processes = CurrentPreset.Processes
-                .ToDictionary(kvp => kvp.Key, kvp => new List<PresetProcessParameter>(kvp.Value));
+            preset.Processes = CurrentPreset.Processes;
 
             if (!Directory.Exists(newFolder))
             {
@@ -413,10 +410,8 @@ namespace CompilePalX
                 return null;
             }
 
-            // copy processes (deep-copy so the edited preset owns its own independent
-            // process/parameter data instead of sharing CurrentPreset's dictionary)
-            preset.Processes = CurrentPreset.Processes
-                .ToDictionary(kvp => kvp.Key, kvp => new List<PresetProcessParameter>(kvp.Value));
+            // copy processes
+            preset.Processes = CurrentPreset.Processes;
 
             // TODO: this can be improved, deleting and recreating isn't really neccessary now that all preset info is consolidated into one file
             // "Edit" preset by deleting the current preset and adding a new preset, then make it the currently selected preset
