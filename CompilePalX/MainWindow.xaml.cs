@@ -560,7 +560,7 @@ namespace CompilePalX
             if (c.ProcessDataGrid.SelectedItem != null)
             {
                 CompileProcess chosenProcess = (CompileProcess)c.ProcessDataGrid.SelectedItem;
-                chosenProcess.Metadata.DoRun = true;
+                chosenProcess.DoRun = true;
                 if (!chosenProcess.PresetDictionary.ContainsKey(ConfigurationManager.CurrentPreset))
                 {
                     chosenProcess.PresetDictionary.Add(ConfigurationManager.CurrentPreset, []);
@@ -914,6 +914,9 @@ namespace CompilePalX
                     if (p.PresetDictionary.ContainsKey(ConfigurationManager.CurrentPreset))
                         CompileProcessesSubList.Add(p);
             }
+
+            // the Run checkbox reads the active preset, so make the list re-read it
+            CompileProcessesListBox.Items.Refresh();
 
             if (currentIndex < CompileProcessesListBox.Items.Count && currentIndex >= 0)
                 CompileProcessesListBox.SelectedIndex = currentIndex;

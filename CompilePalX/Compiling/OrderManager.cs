@@ -32,7 +32,7 @@ namespace CompilePalX.Configuration
 
 			//Get all default processes for config
 			var defaultProcs = new List<CompileProcess>(ConfigurationManager.CompileProcesses
-				.Where(c => c.Metadata.DoRun
+				.Where(c => c.DoRun
 					        && c.PresetDictionary.ContainsKey(ConfigurationManager.CurrentPreset)
 					        && c.Name != "ORDER"
 					        && c.Name != "CUSTOM"
@@ -40,7 +40,7 @@ namespace CompilePalX.Configuration
 
 			//Get custom process
 			var customProcess = (CustomProcess) ConfigurationManager.CompileProcesses
-				.FirstOrDefault(c => c.Metadata.DoRun
+				.FirstOrDefault(c => c.DoRun
 					                    && c.PresetDictionary.ContainsKey(ConfigurationManager.CurrentPreset)
 					                    && c.Name == "CUSTOM"
 				);

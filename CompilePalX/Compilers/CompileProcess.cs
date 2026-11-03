@@ -86,7 +86,25 @@ namespace CompilePalX
         public string PresetFile { get { return Metadata.Name + ".csv"; } }
 
         public double Ordering { get { return Metadata.Order; } }
-        public bool DoRun { get { return Metadata.DoRun; } set { Metadata.DoRun = value; } }
+        // Run/skip is stored per preset (Preset.Run). Presets with no entry for this process fall back to the global default.
+        public bool DoRun
+        {
+            get
+            {
+                var preset = ConfigurationManager.CurrentPreset;
+                if (preset != null && preset.Run.TryGetValue(Name, out bool run))
+                    return run;
+                return Metadata.DoRun;
+            }
+            set
+            {
+                var preset = ConfigurationManager.CurrentPreset;
+                if (preset != null)
+                    preset.Run[Name] = value;
+                else
+                    Metadata.DoRun = value;
+            }
+        }
         public string Name { get { return Metadata.Name; } }
         public string Description { get { return Metadata.Description; } }
         public string Warning { get { return Metadata.Warning; } }
