@@ -76,22 +76,7 @@ namespace CompilePalX
         }
         public object Clone()
         {
-            // MemberwiseClone would share the Processes dictionary (and its lists) with the original,
-            // so changes made to one preset would show up in every preset it was cloned from.
-            return new Preset()
-            {
-                Name = Name,
-                Map = Map,
-                MapRegex = MapRegex,
-                Processes = CopyProcesses(Processes),
-            };
-        }
-
-        public static Dictionary<string, List<PresetProcessParameter>> CopyProcesses(Dictionary<string, List<PresetProcessParameter>> source)
-        {
-            return source.ToDictionary(
-                pair => pair.Key,
-                pair => pair.Value.Select(p => new PresetProcessParameter(p.Name, p.Value, p.Value2, p.ReadOutput, p.WaitForExit, p.Order)).ToList());
+            return this.MemberwiseClone();
         }
 
         /// <summary>
@@ -406,7 +391,7 @@ namespace CompilePalX
             // if cloned preset is map specific, append map to name
             string oldFolder = GetPresetFolder(CurrentPreset);
 
-            preset.Processes = SnapshotProcesses(CurrentPreset);
+            preset.Processes = CurrentPreset.Processes;
 
             if (!Directory.Exists(newFolder))
             {
@@ -426,7 +411,7 @@ namespace CompilePalX
             }
 
             // copy processes
-            preset.Processes = SnapshotProcesses(CurrentPreset);
+            preset.Processes = CurrentPreset.Processes;
 
             // TODO: this can be improved, deleting and recreating isn't really neccessary now that all preset info is consolidated into one file
             // "Edit" preset by deleting the current preset and adding a new preset, then make it the currently selected preset
@@ -436,24 +421,6 @@ namespace CompilePalX
             CurrentPreset = newPreset;
 
             return newPreset;
-        }
-
-        /// <summary>
-        /// Builds a fresh, independent process list for a preset from its live in-memory state.
-        /// Checkbox changes only reach Preset.Processes on save, so this reads PresetDictionary
-        /// directly to avoid copying stale data.
-        /// </summary>
-        private static Dictionary<string, List<PresetProcessParameter>> SnapshotProcesses(Preset preset)
-        {
-            var processes = Preset.CopyProcesses(preset.Processes);
-            foreach (var process in CompileProcesses)
-            {
-                if (process.PresetDictionary.ContainsKey(preset))
-                {
-                    processes[process.Name] = process.PresetDictionary[preset].Select(config => new PresetProcessParameter(config)).ToList();
-                }
-            }
-            return processes;
         }
 
         private static string GetPresetFolder(Preset preset)
@@ -478,7 +445,7 @@ namespace CompilePalX
 
             CurrentPreset.Processes.Remove(name);
             // make sure value is also removed from preset in master preset list
-            KnownPresets.FirstOrDefault(p => p.Equals(CurrentPreset))?.Processes.Remove(name);
+            KnownPresets.FirstOrDefault(p => p.Name == CurrentPreset.Name)?.Processes.Remove(name);
             SavePreset(CurrentPreset);
         }
 
