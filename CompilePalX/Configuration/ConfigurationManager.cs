@@ -54,8 +54,6 @@ namespace CompilePalX
         public string? Map { get; set; }
         public string? MapRegex { get; set; }
         public Dictionary<string, List<PresetProcessParameter>> Processes { get; set; } = [];
-        // Whether each process runs for this preset (the checkbox in the process list). Missing entries fall back to the global default.
-        public Dictionary<string, bool> Run { get; set; } = [];
 
         public bool Equals(Preset? other)
         {
@@ -78,23 +76,7 @@ namespace CompilePalX
         }
         public object Clone()
         {
-            // MemberwiseClone would share the Processes dictionary (and its lists) with the original,
-            // so changes made to one preset would show up in every preset it was cloned from.
-            return new Preset()
-            {
-                Name = Name,
-                Map = Map,
-                MapRegex = MapRegex,
-                Processes = CopyProcesses(Processes),
-                Run = new Dictionary<string, bool>(Run),
-            };
-        }
-
-        public static Dictionary<string, List<PresetProcessParameter>> CopyProcesses(Dictionary<string, List<PresetProcessParameter>> source)
-        {
-            return source.ToDictionary(
-                pair => pair.Key,
-                pair => pair.Value.Select(p => new PresetProcessParameter(p.Name, p.Value, p.Value2, p.ReadOutput, p.WaitForExit, p.Order)).ToList());
+            return this.MemberwiseClone();
         }
 
         /// <summary>
@@ -409,8 +391,7 @@ namespace CompilePalX
             // if cloned preset is map specific, append map to name
             string oldFolder = GetPresetFolder(CurrentPreset);
 
-            preset.Processes = SnapshotProcesses(CurrentPreset);
-            preset.Run = SnapshotRun(CurrentPreset);
+            preset.Processes = CurrentPreset.Processes;
 
             if (!Directory.Exists(newFolder))
             {
@@ -430,8 +411,7 @@ namespace CompilePalX
             }
 
             // copy processes
-            preset.Processes = SnapshotProcesses(CurrentPreset);
-            preset.Run = SnapshotRun(CurrentPreset);
+            preset.Processes = CurrentPreset.Processes;
 
             // TODO: this can be improved, deleting and recreating isn't really neccessary now that all preset info is consolidated into one file
             // "Edit" preset by deleting the current preset and adding a new preset, then make it the currently selected preset
@@ -441,32 +421,6 @@ namespace CompilePalX
             CurrentPreset = newPreset;
 
             return newPreset;
-        }
-
-        /// <summary>
-        /// Builds a fresh, independent process list for a preset from its live in-memory state.
-        /// Checkbox changes only reach Preset.Processes on save, so this reads PresetDictionary
-        /// directly to avoid copying stale data.
-        /// </summary>
-        private static Dictionary<string, List<PresetProcessParameter>> SnapshotProcesses(Preset preset)
-        {
-            var processes = Preset.CopyProcesses(preset.Processes);
-            foreach (var process in CompileProcesses)
-            {
-                if (process.PresetDictionary.ContainsKey(preset))
-                {
-                    processes[process.Name] = process.PresetDictionary[preset].Select(config => new PresetProcessParameter(config)).ToList();
-                }
-            }
-            return processes;
-        }
-
-        /// <summary>Run/skip state for every process as seen by this preset, including the global fallback.</summary>
-        private static Dictionary<string, bool> SnapshotRun(Preset preset)
-        {
-            return CompileProcesses.ToDictionary(
-                process => process.Name,
-                process => preset.Run.TryGetValue(process.Name, out bool run) ? run : process.Metadata.DoRun);
         }
 
         private static string GetPresetFolder(Preset preset)
@@ -490,9 +444,8 @@ namespace CompilePalX
                 return;
 
             CurrentPreset.Processes.Remove(name);
-            CurrentPreset.Run.Remove(name);
             // make sure value is also removed from preset in master preset list
-            KnownPresets.FirstOrDefault(p => p.Equals(CurrentPreset))?.Processes.Remove(name);
+            KnownPresets.FirstOrDefault(p => p.Name == CurrentPreset.Name)?.Processes.Remove(name);
             SavePreset(CurrentPreset);
         }
 

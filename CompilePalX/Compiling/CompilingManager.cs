@@ -267,7 +267,7 @@ namespace CompilePalX
                             }
                         }
 
-                        ProgressManager.Progress += (1d / ConfigurationManager.CompileProcesses.Count(c => c.DoRun &&
+                        ProgressManager.Progress += (1d / ConfigurationManager.CompileProcesses.Count(c => c.Metadata.DoRun &&
                             c.PresetDictionary.ContainsKey(ConfigurationManager.CurrentPreset))) / MapFiles.Count;
 
                         // log empty line to make a space inbetween compile step logs
